@@ -54,9 +54,32 @@ const copy = {
   statDepuis: { fr: 'ouvert depuis 2022', en: 'open since 2022', ar: 'مفتوح منذ 2022' },
   statPlats: { fr: 'plats préparés à la commande', en: 'dishes cooked to order', ar: 'أطباق تُحضّر عند الطلب' },
   statInstagram: { fr: 'abonnés sur Instagram', en: 'followers on Instagram', ar: 'متابع على إنستغرام' },
+  videoGalleryKicker: { fr: 'En images', en: 'In motion', ar: 'باللقطات' },
+  videoGalleryTitle: {
+    fr: "L'ambiance Shoko Lounge",
+    en: 'The Shoko Lounge experience',
+    ar: 'أجواء شوكو لاونج',
+  },
+  videoGalleryAlt: {
+    fr: `Aperçu vidéo de l'ambiance chez ${name}`,
+    en: `Video glimpse of the atmosphere at ${name}`,
+    ar: `لمحة فيديو عن الأجواء في ${name}`,
+  },
 } satisfies Record<string, { fr: string; en: string; ar: string }>;
 
 const path = localizedPath('/a-propos', lang);
+
+// Vertical promo clips supplied by the client — same treatment as the
+// Shoko Nights video on the homepage (phone-shaped frame, muted autoplay
+// loop, unmuted only while actually in view). Reuses that exact homepage
+// clip as the first tile instead of duplicating the file, then three more
+// dedicated to this page.
+const galleryVideos = [
+  { src: '/videos/shoko-nights.mp4', poster: '/images/shoko-nights-poster.webp' },
+  { src: '/videos/about-video-1.mp4', poster: '/images/about-video-1-poster.webp' },
+  { src: '/videos/about-video-2.mp4', poster: '/images/about-video-2-poster.webp' },
+  { src: '/videos/about-video-3.mp4', poster: '/images/about-video-3-poster.webp' },
+];
 ---
 <Layout
   title={t(copy.metaTitle, lang)}
@@ -138,5 +161,65 @@ const path = localizedPath('/a-propos', lang);
     </section>
   </div>
 
+  <!-- Video gallery — the client's own vertical promo clips, in the same
+       phone-frame treatment as the Shoko Nights section on the homepage,
+       laid out side by side (2 cols on mobile, 4 on larger screens) rather
+       than one big player, since these are quick atmosphere glimpses, not
+       a single feature clip. Each video unmutes only while scrolled into
+       view — same IntersectionObserver approach as the homepage, just
+       matched on a shared class since there are several instances here
+       instead of one. -->
+  <section class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <div class="max-w-2xl mb-8 sm:mb-10" data-reveal>
+      <p class="font-bold text-sm tracking-widest uppercase" style="color: var(--color-accent)">{t(copy.videoGalleryKicker, lang)}</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-semibold mt-2">{t(copy.videoGalleryTitle, lang)}</h2>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      {galleryVideos.map((clip, i) => (
+        <div
+          class="relative rounded-2xl p-1.5"
+          style={`background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 16px 40px rgba(0,0,0,0.4); transition-delay: ${i * 80}ms`}
+          data-reveal="scale"
+        >
+          <video
+            class="about-gallery-video w-full aspect-[9/16] rounded-xl object-cover"
+            poster={clip.poster}
+            autoplay
+            muted
+            loop
+            playsinline
+            controls
+            preload="metadata"
+            aria-label={t(copy.videoGalleryAlt, lang)}
+          >
+            <source src={clip.src} type="video/mp4" />
+          </video>
+        </div>
+      ))}
+    </div>
+  </section>
+
   <Ornament />
 </Layout>
+
+<script>
+  // Same pattern as the Shoko Nights video on the homepage — see that
+  // file's comment for the full reasoning. Matched on a shared class
+  // instead of one id, since this page has four of these side by side.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLVideoElement>('.about-gallery-video').forEach((video) => {
+      if (video.dataset.wired === 'true') return;
+      video.dataset.wired = 'true';
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            video.muted = !entry.isIntersecting;
+          });
+        },
+        { threshold: 0.6 }
+      );
+      observer.observe(video);
+    });
+  });
+</script>
