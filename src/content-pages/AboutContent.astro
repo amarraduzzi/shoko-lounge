@@ -70,15 +70,31 @@ const copy = {
     en: `Beyond the plate, ${name} is designed as a place to live in: plush gold decor, signature cocktails, and themed nights that turn the lounge into a stage. It's this whole, more than any single dish, that keeps our guests coming back.`,
     ar: `إلى ما وراء الطبق، صُمم ${name} كمكان للعيش فيه: ديكور ذهبي فاخر، كوكتيلات مميزة، وأمسيات خاصة تحول اللاونج إلى مسرح. هذا الكل، أكثر من أي طبق بمفرده، هو ما يجعل ضيوفنا يعودون دائمًا.`,
   },
-  // New: kicker + alt + CTA for the full-bleed "visual moment" section
-  // (step 3 above). p2 does double duty as the pull-quote text there —
-  // it already reads like a standalone line, same as Home's
-  // platSignatureQuote.
+  // New: kicker + a short, standalone quote line + alt + CTA for the
+  // full-bleed "visual moment" section (step 3 above).
+  //
+  // Fix: this originally reused the full p2 paragraph as the pull-quote,
+  // which is ~2x longer than Home's platSignatureQuote — on a real phone
+  // that pushed the pull-quote's large type way past the photo's height
+  // and off the bottom of the section. A pull-quote needs to be a single
+  // short line, not a paragraph. p2's actual content isn't lost — it's
+  // restored as normal running text in the text block right after this
+  // section (see below).
   momentKicker: { fr: 'Notre cuisine', en: 'Our kitchen', ar: 'مطبخنا' },
+  momentQuote: {
+    fr: 'Chaque plat naît d\'une rencontre entre les traditions — jamais d\'un simple mélange.',
+    en: 'Every dish is born from a meeting of traditions — never a simple mix.',
+    ar: 'يولد كل طبق من التقاء التقاليد — لا من مجرد مزيج.',
+  },
   momentAlt: {
-    fr: `Assiette signature servie chez ${name}`,
-    en: `Signature plate served at ${name}`,
-    ar: `طبق مميز يُقدَّم في ${name}`,
+    // Fix: this photo was a leftover from the "Indian Flavors" template
+    // this site was originally built on (a curry bowl + samosas) — not
+    // an actual Shoko Lounge dish. Swapped to instagram-2.webp, one of
+    // the client's own real posts (a signature roll), which also fits
+    // the fusion framing of this quote far better.
+    fr: `Plat signature de ${name}`,
+    en: `Signature dish at ${name}`,
+    ar: `طبق مميز من ${name}`,
   },
   momentCta: { fr: 'Découvrir la carte', en: 'Discover the menu', ar: 'اكتشف القائمة' },
   statDepuis: { fr: 'ouvert depuis 2022', en: 'open since 2022', ar: 'مفتوح منذ 2022' },
@@ -143,14 +159,14 @@ const galleryVideos = [
   <!-- Visual moment #1 — the "wow" beat this page was missing. Same
        recipe as Home's Signature spotlight: full-bleed photo, ken-burns
        drift, text-shadow instead of a scrim so the photo stays clean, and
-       p2 repurposed as a pull-quote instead of sitting in a paragraph
-       block. This is what turns "a page of text with a grid at the
-       bottom" into something with the same rhythm as the rest of the
-       site. -->
+       a short standalone quote line (not a full paragraph — see
+       momentQuote's comment above for why). This is what turns "a page
+       of text with a grid at the bottom" into something with the same
+       rhythm as the rest of the site. -->
   <section class="relative min-h-[440px] sm:h-[70vh] overflow-hidden" data-reveal="scale">
     <div class="ken-burns absolute inset-0">
       <img
-        src="/images/gallery-spread.webp"
+        src="/images/instagram-2.webp"
         alt={t(copy.momentAlt, lang)}
         class="absolute inset-0 w-full h-full object-cover"
         loading="lazy"
@@ -162,7 +178,7 @@ const galleryVideos = [
           {t(copy.momentKicker, lang)}
         </span>
         <p class="pull-quote [text-shadow:0_2px_14px_rgba(0,0,0,0.85)]">
-          {t(copy.p2, lang)}
+          {t(copy.momentQuote, lang)}
         </p>
         <a href={localizedPath('/menu', lang)} class="inline-block mt-6 text-sm font-bold [text-shadow:0_1px_8px_rgba(0,0,0,0.9)]" style="color: var(--color-accent)">
           {t(copy.momentCta, lang)} {arrow(lang)}
@@ -171,12 +187,15 @@ const galleryVideos = [
     </div>
   </section>
 
-  <!-- Text — p3, plain, no watermark this time (already used above; a
-       second one back-to-back would read as decoration for its own sake).
-       Sits directly above the stats band so the two read as one
-       "closing" chapter of the story rather than two separate blocks. -->
+  <!-- Text — p2 + p3, plain, no watermark this time (already used above;
+       a second one back-to-back would read as decoration for its own
+       sake). p2 moved here from the pull-quote above (its full content,
+       restored in full — see momentQuote's comment). Sits directly above
+       the stats band so this reads as one "closing" chapter of the story
+       rather than three separate blocks. -->
   <section class="relative max-w-3xl mx-auto px-5 sm:px-8 pt-14 sm:pt-16 pb-8 sm:pb-10">
-    <div class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-muted)" data-reveal>
+    <div class="text-sm sm:text-base leading-relaxed space-y-4" style="color: var(--color-text-muted)" data-reveal>
+      <p>{t(copy.p2, lang)}</p>
       <p>{t(copy.p3, lang)}</p>
     </div>
   </section>
