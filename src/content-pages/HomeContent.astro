@@ -102,12 +102,12 @@ const copy = {
     en: 'Shoko-engraved glass held by candlelight',
     ar: 'كأس منقوش عليه شوكو في ضوء الشموع',
   },
-  bombayKicker: { fr: 'Soirées à thème', en: 'Themed nights', ar: 'أمسيات خاصة' },
+  bombayKicker: { fr: 'Tous les soirs', en: 'Every night', ar: 'كل ليلة' },
   bombayTitle: { fr: 'Shoko Nights', en: 'Shoko Nights', ar: 'ليالي شوكو' },
   bombayDescription: {
-    fr: `Certains soirs, ${siteConfig.identity.name} se transforme : DJ set, ambiance lounge et show, pour une soirée à part. Contactez-nous pour connaître le prochain programme.`,
-    en: `On select nights, ${siteConfig.identity.name} transforms: DJ set, lounge atmosphere and live show, for a night apart. Contact us for the upcoming schedule.`,
-    ar: `في بعض الأمسيات، يتحول ${siteConfig.identity.name}: دي جي، أجواء لاونج، وعرض حي، لأمسية مختلفة. تواصلوا معنا لمعرفة البرنامج القادم.`,
+    fr: `Chaque soir, ${siteConfig.identity.name} s'anime : DJ set et entertainment, pour une expérience différente à chaque visite.`,
+    en: `Every night, ${siteConfig.identity.name} comes alive: DJ set and entertainment, for a different experience on every visit.`,
+    ar: `كل ليلة، يتحول ${siteConfig.identity.name}: دي جي وترفيه، لتجربة مختلفة في كل زيارة.`,
   },
   bombayDetail1: { fr: 'DJ set & musique live', en: 'DJ set & live music', ar: 'دي جي وموسيقى حية' },
   bombayDetail2: { fr: 'Cocktails signature', en: 'Signature cocktails', ar: 'كوكتيلات مميزة' },
@@ -276,6 +276,77 @@ const path = localizedPath('/', lang);
     </div>
   </section>
 
+  <!-- Shoko Nights — the themed-night section (DJ set, lounge atmosphere,
+       non-alcoholic cocktails, entertainment). The client supplied an
+       already-edited vertical promo reel (captions + end-card baked in by
+       them) rather than raw footage, so this embeds it as-is instead of
+       re-cutting it — a phone-shaped frame keeps a portrait 9:16 clip from
+       just floating oddly in a landscape page layout. Re-encoded to H.264
+       for playback outside Safari (the source was HEVC, which Chrome/
+       Firefox don't decode) and downscaled to 720p — plenty for a
+       contained player, a fraction of the original's file size. Autoplay
+       starts muted+loop (required — browsers block audio-on autoplay
+       outright), then the astro:page-load script below unmutes it once the
+       card is actually scrolled into view and mutes it again on the way
+       out, so the lounge music only plays while a visitor is looking at it,
+       not the instant the page loads. Native controls stay on as a manual
+       fallback (some browsers still block the scripted unmute). -->
+  <!-- .section-tint, not .section-tint-warm — the testimonial carousel
+       right after this is already warm-tinted, and two warm sections back
+       to back is exactly the flat, undifferentiated rhythm the Club page
+       redesign moved away from. Neutral tint here keeps the plain → tint →
+       warm alternation the rest of the page already establishes. -->
+  <div class="section-tint">
+    <section class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+      <div class="grid sm:grid-cols-[minmax(0,280px)_1fr] gap-10 sm:gap-14 items-center">
+        <div class="mx-auto sm:mx-0 w-full max-w-[280px]" data-reveal="scale">
+          <div
+            class="relative rounded-[2rem] p-2"
+            style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 24px 60px rgba(0,0,0,0.45)"
+          >
+            <video
+              id="bombay-video"
+              class="w-full aspect-[9/16] rounded-[1.5rem] object-cover"
+              poster="/images/shoko-nights-poster.webp"
+              autoplay
+              muted
+              loop
+              playsinline
+              controls
+              preload="metadata"
+              aria-label={t(copy.bombayVideoAlt, lang)}
+            >
+              <source src="/videos/shoko-nights.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+
+        <div data-reveal style="transition-delay: 100ms">
+          <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style="color: var(--color-accent)">
+            {t(copy.bombayKicker, lang)}
+          </span>
+          <h2 class="font-display text-3xl sm:text-4xl font-semibold mb-4" style="color: var(--color-text-primary)">
+            {t(copy.bombayTitle, lang)}
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-6" style="color: var(--color-text-muted)">
+            {t(copy.bombayDescription, lang)}
+          </p>
+          <ul class="flex flex-wrap gap-x-6 gap-y-3 mb-8">
+            {[copy.bombayDetail1, copy.bombayDetail2, copy.bombayDetail3].map((detail) => (
+              <li class="flex items-center gap-2 text-sm font-semibold" style="color: var(--color-text-primary)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                  <path d="M5 12.5l4.5 4.5L19 7" />
+                </svg>
+                {t(detail, lang)}
+              </li>
+            ))}
+          </ul>
+          <Button href={localizedPath('/reservation', lang)} variant="cta">{t(copy.bombayCta, lang)}</Button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <!-- Menu highlights -->
   <section class="max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
     <div class="flex items-baseline justify-between mb-8 pb-3" style="border-bottom: 1px solid var(--color-border)">
@@ -422,77 +493,6 @@ const path = localizedPath('/', lang);
     ))}
     </div>
   </section>
-
-  <!-- Shoko Nights — the themed-night section (DJ set, lounge atmosphere,
-       non-alcoholic cocktails, entertainment). The client supplied an
-       already-edited vertical promo reel (captions + end-card baked in by
-       them) rather than raw footage, so this embeds it as-is instead of
-       re-cutting it — a phone-shaped frame keeps a portrait 9:16 clip from
-       just floating oddly in a landscape page layout. Re-encoded to H.264
-       for playback outside Safari (the source was HEVC, which Chrome/
-       Firefox don't decode) and downscaled to 720p — plenty for a
-       contained player, a fraction of the original's file size. Autoplay
-       starts muted+loop (required — browsers block audio-on autoplay
-       outright), then the astro:page-load script below unmutes it once the
-       card is actually scrolled into view and mutes it again on the way
-       out, so the lounge music only plays while a visitor is looking at it,
-       not the instant the page loads. Native controls stay on as a manual
-       fallback (some browsers still block the scripted unmute). -->
-  <!-- .section-tint, not .section-tint-warm — the testimonial carousel
-       right after this is already warm-tinted, and two warm sections back
-       to back is exactly the flat, undifferentiated rhythm the Club page
-       redesign moved away from. Neutral tint here keeps the plain → tint →
-       warm alternation the rest of the page already establishes. -->
-  <div class="section-tint">
-    <section class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
-      <div class="grid sm:grid-cols-[minmax(0,280px)_1fr] gap-10 sm:gap-14 items-center">
-        <div class="mx-auto sm:mx-0 w-full max-w-[280px]" data-reveal="scale">
-          <div
-            class="relative rounded-[2rem] p-2"
-            style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 24px 60px rgba(0,0,0,0.45)"
-          >
-            <video
-              id="bombay-video"
-              class="w-full aspect-[9/16] rounded-[1.5rem] object-cover"
-              poster="/images/shoko-nights-poster.webp"
-              autoplay
-              muted
-              loop
-              playsinline
-              controls
-              preload="metadata"
-              aria-label={t(copy.bombayVideoAlt, lang)}
-            >
-              <source src="/videos/shoko-nights.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-
-        <div data-reveal style="transition-delay: 100ms">
-          <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style="color: var(--color-accent)">
-            {t(copy.bombayKicker, lang)}
-          </span>
-          <h2 class="font-display text-3xl sm:text-4xl font-semibold mb-4" style="color: var(--color-text-primary)">
-            {t(copy.bombayTitle, lang)}
-          </h2>
-          <p class="text-sm sm:text-base leading-relaxed mb-6" style="color: var(--color-text-muted)">
-            {t(copy.bombayDescription, lang)}
-          </p>
-          <ul class="flex flex-wrap gap-x-6 gap-y-3 mb-8">
-            {[copy.bombayDetail1, copy.bombayDetail2, copy.bombayDetail3].map((detail) => (
-              <li class="flex items-center gap-2 text-sm font-semibold" style="color: var(--color-text-primary)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
-                  <path d="M5 12.5l4.5 4.5L19 7" />
-                </svg>
-                {t(detail, lang)}
-              </li>
-            ))}
-          </ul>
-          <Button href={localizedPath('/reservation', lang)} variant="cta">{t(copy.bombayCta, lang)}</Button>
-        </div>
-      </div>
-    </section>
-  </div>
 
   <!-- Instagram spotlight — replaces this template's testimonial carousel.
        Shoko Lounge's real Tripadvisor rating is 3.3/5 on 15 reviews with
