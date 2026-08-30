@@ -179,7 +179,7 @@ const path = localizedPath('/menu', lang);
         </button>
       </div>
     </div>
-    <nav class="flex flex-wrap gap-2" aria-label={t(copy.jumpNavLabel, lang)}>
+    <nav class="menu-jump-scroll" aria-label={t(copy.jumpNavLabel, lang)}>
       {menuHighlights.map((category, i) => (
         <a href={`#cat-${i}`} class="menu-jump-chip" data-jump>{t(category.label, lang)}</a>
       ))}
@@ -355,6 +355,7 @@ const path = localizedPath('/menu', lang);
     border-color: var(--color-accent);
   }
   .menu-jump-chip {
+    flex: 0 0 auto;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -372,6 +373,46 @@ const path = localizedPath('/menu', lang);
   .menu-jump-chip:hover {
     border-color: var(--color-accent);
     color: var(--color-accent);
+  }
+
+  /* Glovo-style horizontal scroll strip — the chip row can hold more
+     categories than fit on a phone screen; wrapping onto a second line
+     pushed the menu down and, worse, clipped chips at the container edge
+     with no way to reach them. A single scrollable row with edge-fade
+     masking (so it visually reads as "more content this way", not a hard
+     cut) plus a negative margin that bleeds the row to the screen edge
+     (so the first/last chip isn't cramped against the page padding) is
+     the same pattern Glovo/Uber Eats category tabs use. -webkit-overflow-
+     scrolling: touch keeps it feeling native on iOS; the scrollbar is
+     hidden cross-browser since chip-count already signals "there's more"
+     via the fade, a visible scrollbar would just add clutter. */
+  .menu-jump-scroll {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    padding-block: 2px;
+    mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+  }
+  .menu-jump-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  [dir='rtl'] .menu-jump-scroll {
+    mask-image: linear-gradient(to left, transparent, black 20px, black calc(100% - 20px), transparent);
+    -webkit-mask-image: linear-gradient(to left, transparent, black 20px, black calc(100% - 20px), transparent);
+  }
+  @media (min-width: 640px) {
+    .menu-jump-scroll {
+      margin-inline: -2rem;
+      padding-inline: 2rem;
+    }
   }
 </style>
 
