@@ -7,18 +7,12 @@
 // genuinely repeat (nav, buttons) still have exactly one source of truth.
 import type { LocalizedText } from './languages';
 
-export const nav: Record<'accueil' | 'menu' | 'decouvrir' | 'aPropos' | 'avis' | 'club' | 'reservation' | 'faq' | 'contact', LocalizedText> = {
+export const nav: Record<'accueil' | 'menu' | 'aPropos' | 'avis' | 'club' | 'faq' | 'contact', LocalizedText> = {
   accueil: { fr: 'Accueil', en: 'Home', ar: 'الرئيسية' },
   menu: { fr: 'Menu', en: 'Menu', ar: 'القائمة' },
-  // New hub of dish-guide articles (origin/history/how-it's-made for each
-  // menu item) — placed right after Menu in the nav since it's the natural
-  // "I want to understand what I'm ordering" next step, not a standalone
-  // destination someone browses to first.
-  decouvrir: { fr: 'Découvrir', en: 'Discover', ar: 'اكتشف' },
   aPropos: { fr: 'À propos', en: 'About', ar: 'من نحن' },
   avis: { fr: 'Avis', en: 'Reviews', ar: 'التقييمات' },
   club: { fr: 'Le Club', en: 'The Club', ar: 'النادي' },
-  reservation: { fr: 'Réserver', en: 'Reserve', ar: 'احجز طاولة' },
   faq: { fr: 'FAQ', en: 'FAQ', ar: 'الأسئلة الشائعة' },
   contact: { fr: 'Contact', en: 'Contact', ar: 'اتصل بنا' },
 };
@@ -26,7 +20,6 @@ export const nav: Record<'accueil' | 'menu' | 'decouvrir' | 'aPropos' | 'avis' |
 export const common = {
   commander: { fr: 'Commander', en: 'Order', ar: 'اطلب الآن' } satisfies LocalizedText,
   voirLeMenu: { fr: 'Voir le menu', en: 'View the menu', ar: 'شاهد القائمة' } satisfies LocalizedText,
-  reserverUneTable: { fr: 'Réserver une table', en: 'Reserve a table', ar: 'احجز طاولة' } satisfies LocalizedText,
   menuComplet: { fr: 'Menu complet', en: 'Full menu', ar: 'القائمة الكاملة' } satisfies LocalizedText,
   decouvrirLeMenu: { fr: 'Découvrir le menu', en: 'Discover the menu', ar: 'اكتشف القائمة' } satisfies LocalizedText,
   voirLeMenuComplet: { fr: 'Voir le menu complet', en: 'See the full menu', ar: 'شاهد القائمة الكاملة' } satisfies LocalizedText,
@@ -35,13 +28,12 @@ export const common = {
   pretACommander: { fr: 'Prêt à commander ?', en: 'Ready to order?', ar: 'جاهز للطلب؟' } satisfies LocalizedText,
   itineraire: { fr: 'Itinéraire', en: 'Directions', ar: 'الاتجاهات' } satisfies LocalizedText,
   retourAccueil: { fr: "Retour à l'accueil", en: 'Back to home', ar: 'العودة للرئيسية' } satisfies LocalizedText,
-
   adresse: { fr: 'Adresse', en: 'Address', ar: 'العنوان' } satisfies LocalizedText,
   telephone: { fr: 'Téléphone', en: 'Phone', ar: 'الهاتف' } satisfies LocalizedText,
   whatsapp: { fr: 'WhatsApp', en: 'WhatsApp', ar: 'واتساب' } satisfies LocalizedText,
   horaires: { fr: 'Horaires', en: 'Opening hours', ar: 'ساعات العمل' } satisfies LocalizedText,
-
-  instagramFollowersSuffix: { fr: 'abonnés sur Instagram', en: 'followers on Instagram', ar: 'متابع على إنستغرام' } satisfies LocalizedText,
+  avisTripadvisorSuffix: { fr: 'avis Tripadvisor', en: 'Tripadvisor reviews', ar: 'تقييم على Tripadvisor' } satisfies LocalizedText,
+  avisGoogle: { fr: 'Avis Google', en: 'Google reviews', ar: 'تقييمات Google' } satisfies LocalizedText,
   laisserAvisGoogle: { fr: 'Laisser un avis sur Google', en: 'Leave a review on Google', ar: 'اترك تقييمًا على Google' } satisfies LocalizedText,
   voirSurGoogle: { fr: 'Voir sur Google', en: 'View on Google', ar: 'شاهد على Google' } satisfies LocalizedText,
   surGoogle: { fr: 'sur Google', en: 'on Google', ar: 'على Google' } satisfies LocalizedText,
@@ -49,20 +41,11 @@ export const common = {
   fermeMaintenant: { fr: 'Fermé maintenant', en: 'Closed now', ar: 'مغلق الآن' } satisfies LocalizedText,
   toutLeMenu: { fr: 'Tout le menu', en: 'Full menu', ar: 'القائمة كاملة' } satisfies LocalizedText,
   vegetarienUniquement: { fr: 'Végétarien', en: 'Vegetarian', ar: 'نباتي' } satisfies LocalizedText,
+  retourAuxOptions: { fr: 'Retour aux options du menu', en: 'Back to menu options', ar: 'العودة لخيارات القائمة' } satisfies LocalizedText,
   noteMoyenneClients: { fr: 'note moyenne de nos clients', en: 'average customer rating', ar: 'متوسط تقييم عملائنا' } satisfies LocalizedText,
-  ansExperience: { fr: "ans d'expérience en cuisine fusion", en: 'years of experience in fusion cuisine', ar: 'سنوات خبرة في المطبخ الفيوجن' } satisfies LocalizedText,
+  ansExperience: { fr: "ans d'expérience en cuisine indienne", en: 'years of experience in Indian cuisine', ar: 'سنوات خبرة في المطبخ الهندي' } satisfies LocalizedText,
   platsPreparesCommande: { fr: 'plats préparés à la commande', en: 'dishes cooked to order', ar: 'أطباق تُحضّر عند الطلب' } satisfies LocalizedText,
   preparesCommandeLine: { fr: 'de nos plats sont préparés à la commande — jamais réchauffés, jamais à l\'avance.', en: 'of our dishes are cooked to order — never reheated, never made in advance.', ar: 'من أطباقنا تُحضّر عند الطلب — لا تُسخّن أبدًا ولا تُجهّز مسبقًا.' } satisfies LocalizedText,
-
-  // Shared trust badge — used on Home ("why us") and Menu (hero); the FAQ
-  // answer (src/content/faq.ts) states the same claim in full-sentence
-  // form rather than importing this label, since that content lives in its
-  // own file, but the wording is kept in sync by hand. Renamed from the
-  // Indian Flavors template's halalBadge: Shoko Lounge is a fusion lounge
-  // with a cocktail/"Sip" menu, so a halal claim doesn't carry over —
-  // confirm with the client whether they want a halal-food badge alongside
-  // this, since the two aren't mutually exclusive.
-  fusionBadge: { fr: 'Fusion contemporaine', en: 'Contemporary fusion', ar: 'مزيج معاصر' } satisfies LocalizedText,
 };
 
 export const footer = {

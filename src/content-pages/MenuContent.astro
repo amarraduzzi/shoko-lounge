@@ -7,51 +7,42 @@ import Ornament from '../components/Ornament.astro';
 import { siteConfig } from '../config/site.config';
 import { getOrderCtaLabel } from '../lib/nav';
 import { menuHighlights } from '../content/menu-highlights';
-import { barList } from '../content/bar-list';
-import { t, localizedPath, arrow, type Language } from '../i18n/languages';
+import { t, localizedPath, type Language } from '../i18n/languages';
 import { common, place } from '../i18n/ui';
 
 interface Props {
   lang?: Language;
 }
-const { lang = 'fr' } = Astro.props;
 
+const { lang = 'fr' } = Astro.props;
 const { name } = siteConfig.identity;
 const primaryKeyword = t(siteConfig.identity.primaryKeyword, lang);
 const city = t(place.city, lang);
 const orderCtaLabel = getOrderCtaLabel(lang);
 
 const copy = {
-  // Keyword-first, same reasoning as HomeContent.astro's metaTitle.
   metaTitle: {
-    fr: `${primaryKeyword} à ${city} — Menu | ${name}`,
-    en: `${primaryKeyword} in ${city} — Menu | ${name}`,
-    ar: `${primaryKeyword} في ${city} — القائمة | ${name}`,
+    fr: `Menu — ${primaryKeyword} à ${city} | ${name}`,
+    en: `Menu — ${primaryKeyword} in ${city} | ${name}`,
+    ar: `القائمة — ${primaryKeyword} في ${city} | ${name}`,
   },
   metaDescription: {
-    fr: `Découvrez le menu de ${name}, ${primaryKeyword} à ${city} : entrées, plats signature, sushi fusion et cocktails "Sip". Réservez votre table sur place.`,
-    en: `Discover the menu at ${name}, ${primaryKeyword} in ${city}: starters, signature dishes, fusion sushi and "Sip" cocktails. Reserve your table.`,
-    ar: `اكتشف قائمة ${name}, ${primaryKeyword} في ${city}: مقبلات، أطباق مميزة، سوشي فيوجن، وكوكتيلات "Sip". احجز طاولتك.`,
+    fr: `Découvrez le menu complet de ${name}, ${primaryKeyword} à ${city} : entrées, plats tandoori, biryani et pains naan. Commandez en ligne ou sur place.`,
+    en: `Discover the full menu of ${name}, ${primaryKeyword} in ${city}: starters, tandoori dishes, biryani and naan bread. Order online or dine in.`,
+    ar: `اكتشف القائمة الكاملة لـ${name}, ${primaryKeyword} في ${city}: مقبلات، أطباق تندوري، برياني وخبز نان. اطلب أونلاين أو تناول الطعام في المطعم.`,
   },
   heroAlt: {
     fr: `Plats du menu de ${name}`,
     en: `Dishes from ${name}'s menu`,
     ar: `أطباق من قائمة ${name}`,
   },
-  heroTitle: {
-    fr: `Le menu de notre ${primaryKeyword} à ${city}`,
-    en: `The menu at our ${primaryKeyword} in ${city}`,
-    ar: `قائمة ${primaryKeyword} الخاص بنا في ${city}`,
-  },
+  heroTitle: { fr: `Le menu de notre ${primaryKeyword}`, en: `Our ${primaryKeyword}'s menu`, ar: `قائمة ${primaryKeyword} الخاص بنا` },
   heroSubtitle: {
-    fr: 'Une sélection de nos plats signature et de nos cocktails. Le menu complet est disponible sur place.',
-    en: 'A selection of our signature dishes and cocktails. The full menu is available on site.',
-    ar: 'تشكيلة من أطباقنا وكوكتيلاتنا المميزة. القائمة الكاملة متوفرة في المطعم.',
+    fr: 'Une sélection de nos plats signature. Le menu complet, avec toutes les options et suppléments, est disponible au moment de la commande.',
+    en: 'A selection of our signature dishes. The full menu, with all options and extras, is available at the time of ordering.',
+    ar: 'تشكيلة من أطباقنا المميزة. القائمة الكاملة، بجميع الخيارات والإضافات، متوفرة عند الطلب.',
   },
-  readyToOrder: { fr: 'Une envie ce soir ?', en: 'In the mood tonight?', ar: 'لديك رغبة الليلة؟' },
-  searchPlaceholder: { fr: 'Rechercher un plat…', en: 'Search a dish…', ar: 'ابحث عن طبق…' },
-  searchLabel: { fr: 'Rechercher dans le menu', en: 'Search the menu', ar: 'البحث في القائمة' },
-  jumpNavLabel: { fr: 'Aller à une catégorie', en: 'Jump to a category', ar: 'الانتقال إلى قسم' },
+  readyToOrder: { fr: 'Prêt à commander ?', en: 'Ready to order?', ar: 'جاهز للطلب؟' },
 } satisfies Record<string, { fr: string; en: string; ar: string }>;
 
 const menuJsonLd = {
@@ -72,6 +63,7 @@ const menuJsonLd = {
 
 const path = localizedPath('/menu', lang);
 ---
+
 <Layout
   title={t(copy.metaTitle, lang)}
   description={t(copy.metaDescription, lang)}
@@ -88,7 +80,7 @@ const path = localizedPath('/menu', lang);
   <section class="relative min-h-[420px] sm:h-[64vh] flex items-end overflow-hidden" data-reveal="scale">
     <div class="ken-burns absolute inset-0">
       <img
-        src="/images/reservation-hero.webp"
+        src="/images/gallery-spread.webp"
         alt={t(copy.heroAlt, lang)}
         class="absolute inset-0 w-full h-full object-cover"
       />
@@ -102,37 +94,14 @@ const path = localizedPath('/menu', lang);
       <p class="mt-4 max-w-xl text-sm sm:text-base" style="color: var(--color-text-muted)">
         {t(copy.heroSubtitle, lang)}
       </p>
-      <!-- Halal badge — this is the page people are actually deciding what
-           to order on, so it sits right under the subtitle where that
-           decision happens, not buried in a paragraph further down. -->
-      <span
-        class="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full text-xs font-bold"
-        style="border: 1px solid var(--color-border); color: var(--color-accent); background-color: color-mix(in srgb, var(--color-accent) 12%, transparent)"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
-          <path d="M5 12.5l4.5 4.5L19 7" />
-        </svg>
-        {t(common.fusionBadge, lang)}
-      </span>
     </div>
   </section>
 
-  <!-- Sticky order bar — this used to be a plain one-off button right
-       under the hero, easy to miss once you'd scrolled two categories
-       down into an appetite you can't act on without scrolling back up.
-       `position: sticky` (no JS, consistent with WhatsAppButton's own
-       "no unnecessary client-side dependency" stance) keeps the order CTA
-       one tap away for the entire scroll, pinned under the sticky header
-       instead of competing with the WhatsApp FAB for the bottom corner. -->
-  <div
-    class="sticky top-16 sm:top-20 z-30"
-    style="background-color: color-mix(in srgb, var(--color-surface) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--color-border)"
-  >
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-3 flex items-center justify-between gap-4">
-      <p class="hidden sm:block text-sm font-semibold" style="color: var(--color-text-primary)">{t(copy.readyToOrder, lang)}</p>
-      <Button href={orderCtaLabel.href} variant="cta" class="!py-2.5 !px-5 text-xs sm:text-sm">{orderCtaLabel.label}</Button>
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pt-8 pb-4">
+    <div>
+      <Button href={orderCtaLabel.href} external variant="cta">{orderCtaLabel.label}</Button>
     </div>
-  </div>
+  </section>
 
   <!-- Typographic moment — same oversized-number language as À propos,
        repeated here instead of only appearing on one page of the site. -->
@@ -143,47 +112,17 @@ const path = localizedPath('/menu', lang);
     </p>
   </section>
 
-  <!-- Search + jump nav (final punch-list item #4) — the menu had grown
-       into one long scroll with no way to reach a category directly, and
-       no way to check "is X on the menu" without scanning everything.
-       Deliberately restrained: a plain bordered field + thin uppercase
-       chips in the site's existing gold/line-icon language, no bright
-       colors or playful iconography — this is a high-end restaurant menu,
-       not a food-delivery app. Search matches name + description
-       client-side (data-search, accent-insensitive) and combines with the
-       existing vegetarian filter via AND logic; jump chips are plain
-       anchors, intercepted in the script below for a smooth scroll that
-       accounts for the sticky order bar's height. -->
-  <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-6" data-reveal>
-    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4">
-      <div class="menu-search-wrap sm:max-w-xs w-full">
-        <svg class="menu-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" />
-          <path d="M21 21l-4.3-4.3" />
-        </svg>
-        <input
-          type="text"
-          id="menu-search"
-          class="menu-search-input"
-          placeholder={t(copy.searchPlaceholder, lang)}
-          aria-label={t(copy.searchLabel, lang)}
-        />
-      </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <button type="button" class="menu-filter-btn is-active" data-filter="all">{t(common.toutLeMenu, lang)}</button>
-        <button type="button" class="menu-filter-btn" data-filter="vegetarian">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" class="inline-block align-[-1px] me-1">
-            <path d="M12 3c-1.5 3-4.5 4.5-4.5 8.5a4.5 4.5 0 009 0C16.5 7.5 13.5 6 12 3z" />
-          </svg>
-          {t(common.vegetarienUniquement, lang)}
-        </button>
-      </div>
-    </div>
-    <nav class="menu-jump-scroll" aria-label={t(copy.jumpNavLabel, lang)}>
-      {menuHighlights.map((category, i) => (
-        <a href={`#cat-${i}`} class="menu-jump-chip" data-jump>{t(category.label, lang)}</a>
-      ))}
-    </nav>
+  <!-- Filter (final punch-list item #3) — a real, useful interaction, not
+       decoration: the FAQ already states a large part of the menu is
+       vegetarian, but until now a visitor had to scan every card to find
+       those dishes. Client-side only (show/hide, no reload) — deliberately
+       just "Végétarien", not a fuller vegan/spice-level filter, since
+       vegetarian is the one dietary fact readable straight off each dish's
+       own description; see menu-highlights.ts's comment for why. Also the
+       scroll anchor every category's "back to top" link jumps to. -->
+  <section id="menu-options" class="max-w-7xl mx-auto px-5 sm:px-8 pb-6 flex flex-wrap items-center gap-2 scroll-mt-24" data-reveal>
+    <button type="button" class="menu-filter-btn is-active" data-filter="all">{t(common.toutLeMenu, lang)}</button>
+    <button type="button" class="menu-filter-btn" data-filter="vegetarian">🌱 {t(common.vegetarienUniquement, lang)}</button>
   </section>
 
   <!-- Alternating band now goes warm (--color-primary-dark) instead of
@@ -191,33 +130,39 @@ const path = localizedPath('/menu', lang);
        here rather than À propos/Avis because it's food, and warmth fits
        a menu the way it doesn't fit an editorial about-page. -->
   {menuHighlights.map((category, i) => (
-    <div id={`cat-${i}`} class={`scroll-mt-28 sm:scroll-mt-32 ${i % 2 === 1 ? 'section-tint-warm' : ''}`} data-menu-category>
+    <div class={i % 2 === 1 ? 'section-tint-warm' : ''} data-menu-category>
       <section class="max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
-        <div>
-          <h2
-            class="font-display text-2xl font-semibold mb-5 pb-3 flex items-baseline gap-3"
-            style="color: var(--color-text-primary); border-bottom: 1px solid var(--color-border)"
-          >
-            <span class="text-xs font-bold" style="color: var(--color-accent)">{String(i + 1).padStart(2, '0')}</span>
-            {t(category.label, lang)}
-          </h2>
-          <div class="grid sm:grid-cols-2 gap-4">
-            {category.items.map((item, j) => (
-              <div
-                class="card-lift flex items-start gap-4 rounded-xl p-4"
-                style={`background-color: ${i % 2 === 1 ? 'color-mix(in srgb, var(--color-primary-dark) 14%, var(--color-surface-muted))' : 'var(--color-surface)'}; border: 1px solid var(--color-border); transition-delay: ${j * 70}ms`}
-                data-reveal
-                data-veg={item.vegetarian ? 'true' : 'false'}
-                data-search={`${item.name} ${t(item.description, lang)}`}
-              >
-                <div class="min-w-0 flex-1">
-                  <h3 class="menu-item-name font-display font-semibold" style="color: var(--color-text-primary)">
-                    {item.name}
-                    {item.vegetarian && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.4" stroke-linejoin="round" class="inline-block align-[1px] ms-1" aria-label={t(common.vegetarienUniquement, lang)}>
-                        <path d="M12 3c-1.5 3-4.5 4.5-4.5 8.5a4.5 4.5 0 009 0C16.5 7.5 13.5 6 12 3z" />
-                      </svg>
-                    )}
+        <div class={category.image ? 'grid sm:grid-cols-[minmax(0,15rem)_1fr] gap-6 sm:gap-8 items-start' : ''}>
+          {category.image && (
+            <div class="photo-frame rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-square" data-reveal="scale">
+              <img src={category.image} alt={category.imageAlt ? t(category.imageAlt, lang) : t(category.label, lang)} class="w-full h-full object-cover" loading="lazy" />
+            </div>
+          )}
+          <div>
+            <h2
+              class="font-display text-2xl font-semibold mb-5 pb-3 flex items-baseline gap-3"
+              style="color: var(--color-text-primary); border-bottom: 1px solid var(--color-border)"
+            >
+              <span class="text-xs font-bold" style="color: var(--color-accent)">{String(i + 1).padStart(2, '0')}</span>
+              {t(category.label, lang)}
+            </h2>
+            <div class="grid sm:grid-cols-2 gap-4">
+              {category.items.map((item, j) => (
+                <div
+                  class="card-lift flex items-start gap-4 rounded-xl p-4"
+                  style={`background-color: ${i % 2 === 1 ? 'color-mix(in srgb, var(--color-primary-dark) 14%, var(--color-surface-muted))' : 'var(--color-surface)'}; border: 1px solid var(--color-border); transition-delay: ${j * 70}ms`}
+                  data-reveal
+                  data-veg={item.vegetarian ? 'true' : 'false'}
+                >
+                  {item.image && (
+                    <div class="photo-frame shrink-0 rounded-lg overflow-hidden w-16 h-16 sm:w-20 sm:h-20">
+                      <img src={item.image} alt={item.imageAlt ? t(item.imageAlt, lang) : item.name} class="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  )}
+                  <div class="min-w-0 flex-1">
+                    <h3 class="menu-item-name font-display font-semibold" style="color: var(--color-text-primary)">
+                      {item.name}
+                      {item.vegetarian && <span class="text-xs align-middle" title={t(common.vegetarienUniquement, lang)}>🌱</span>}
                     </h3>
                     <p class="text-sm mt-1" style="color: var(--color-text-muted)">{t(item.description, lang)}</p>
                   </div>
@@ -226,65 +171,19 @@ const path = localizedPath('/menu', lang);
               ))}
             </div>
           </div>
+        </div>
       </section>
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 pb-2 text-center">
+        <a href="#menu-options" class="menu-back-to-top">↑ {t(common.retourAuxOptions, lang)}</a>
+      </div>
     </div>
   ))}
 
   <Ornament />
 
-  <!-- Bar & Cellar: bare name+price bottle/glass lists, no descriptions in
-       the source PDF (see bar-list.ts header comment) — rendered as
-       compact tables rather than forced into the illustrated item-card
-       used above for food/cocktails, which would mean inventing filler
-       text for 70+ bottles. -->
-  <section class="max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
-    <h2 class="font-display text-2xl font-semibold mb-2" style="color: var(--color-text-primary)">
-      {lang === 'en' ? 'The Bar & Cellar' : lang === 'ar' ? 'البار والقبو' : 'La Cave & le Bar'}
-    </h2>
-    <p class="text-sm mb-6" style="color: var(--color-text-muted)">
-      {lang === 'en'
-        ? 'Full bottle & glass list — ask our team for pairing suggestions.'
-        : lang === 'ar'
-          ? 'قائمة كاملة بالكؤوس والزجاجات — اسأل فريقنا عن اقتراحات المرافقة.'
-          : "Liste complète des bouteilles et verres — n'hésitez pas à demander conseil à notre équipe."}
-    </p>
-    <div class="grid sm:grid-cols-2 gap-x-8 gap-y-8">
-      {barList.map((section) => (
-        <div>
-          <h3
-            class="font-display font-semibold text-sm uppercase tracking-wide mb-3 pb-2"
-            style="color: var(--color-accent); border-bottom: 1px solid var(--color-border)"
-          >
-            {lang === 'en' ? section.label.en : section.label.fr}
-          </h3>
-          <table class="w-full text-sm">
-            <tbody>
-              {section.items.map((item) => (
-                <tr style="border-bottom: 1px solid var(--color-border)">
-                  <td class="py-2 pr-2" style="color: var(--color-text-primary)">
-                    {item.name}
-                    {item.origin && <span class="text-xs italic" style="color: var(--color-text-muted)"> — {item.origin}</span>}
-                    {item.note && <span class="text-xs italic" style="color: var(--color-text-muted)"> ({item.note})</span>}
-                  </td>
-                  {section.columns === 'glassBottle' && (
-                    <td class="py-2 pr-2 text-right whitespace-nowrap" style="color: var(--color-text-muted)">
-                      {item.priceGlass ? `${item.priceGlass} MAD` : '—'}
-                    </td>
-                  )}
-                  <td class="py-2 text-right font-bold whitespace-nowrap" style="color: var(--color-accent)">{item.priceBottle} MAD</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <Ornament />
   <section class="max-w-7xl mx-auto px-5 sm:px-8 py-16 text-center">
     <p class="text-sm mb-4" style="color: var(--color-text-muted)">{t(copy.readyToOrder, lang)}</p>
-    <Button href={orderCtaLabel.href} variant="cta">{orderCtaLabel.label}</Button>
+    <Button href={orderCtaLabel.href} external variant="cta">{orderCtaLabel.label}</Button>
   </section>
 </Layout>
 
@@ -302,105 +201,28 @@ const path = localizedPath('/menu', lang);
       background-color 0.15s ease,
       border-color 0.15s ease;
   }
+
   .menu-filter-btn.is-active {
     color: var(--color-background);
     background-color: var(--color-accent);
     border-color: var(--color-accent);
   }
+
   .menu-filter-btn:not(.is-active):hover {
     border-color: var(--color-accent);
     color: var(--color-accent);
   }
 
-  .menu-search-wrap {
-    position: relative;
-  }
-  .menu-search-icon {
-    position: absolute;
-    inset-inline-start: 0.9rem;
-    top: 50%;
-    transform: translateY(-50%);
+  .menu-back-to-top {
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--color-text-muted);
-    pointer-events: none;
-  }
-  .menu-search-input {
-    width: 100%;
-    padding-block: 0.6rem;
-    padding-inline-start: 2.5rem;
-    padding-inline-end: 1rem;
-    border-radius: 999px;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-surface);
-    color: var(--color-text-primary);
-    font-size: 0.875rem;
-    transition: border-color 0.15s ease;
-  }
-  .menu-search-input::placeholder {
-    color: var(--color-text-muted);
-  }
-  .menu-search-input:focus {
-    outline: none;
-    border-color: var(--color-accent);
-  }
-  .menu-jump-chip {
-    flex: 0 0 auto;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-muted);
-    background-color: transparent;
-    white-space: nowrap;
-    transition:
-      color 0.15s ease,
-      border-color 0.15s ease;
-  }
-  .menu-jump-chip:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.15s ease;
   }
 
-  /* Glovo-style horizontal scroll strip — the chip row can hold more
-     categories than fit on a phone screen; wrapping onto a second line
-     pushed the menu down and, worse, clipped chips at the container edge
-     with no way to reach them. A single scrollable row with edge-fade
-     masking (so it visually reads as "more content this way", not a hard
-     cut) plus a negative margin that bleeds the row to the screen edge
-     (so the first/last chip isn't cramped against the page padding) is
-     the same pattern Glovo/Uber Eats category tabs use. -webkit-overflow-
-     scrolling: touch keeps it feeling native on iOS; the scrollbar is
-     hidden cross-browser since chip-count already signals "there's more"
-     via the fade, a visible scrollbar would just add clutter. */
-  .menu-jump-scroll {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    margin-inline: -1.25rem;
-    padding-inline: 1.25rem;
-    padding-block: 2px;
-    mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
-  }
-  .menu-jump-scroll::-webkit-scrollbar {
-    display: none;
-  }
-  [dir='rtl'] .menu-jump-scroll {
-    mask-image: linear-gradient(to left, transparent, black 20px, black calc(100% - 20px), transparent);
-    -webkit-mask-image: linear-gradient(to left, transparent, black 20px, black calc(100% - 20px), transparent);
-  }
-  @media (min-width: 640px) {
-    .menu-jump-scroll {
-      margin-inline: -2rem;
-      padding-inline: 2rem;
-    }
+  .menu-back-to-top:hover {
+    color: var(--color-accent);
   }
 </style>
 
@@ -412,32 +234,18 @@ const path = localizedPath('/menu', lang);
   // via a View Transitions client-side navigation, not just a hard load.
   document.addEventListener('astro:page-load', () => {
     const filterButtons = document.querySelectorAll('.menu-filter-btn');
-    const searchInput = document.getElementById('menu-search');
-    const jumpChips = document.querySelectorAll('[data-jump]');
+    if (!filterButtons.length) return;
+
     const items = document.querySelectorAll('[data-veg]');
     const categories = document.querySelectorAll('[data-menu-category]');
 
-    if (!filterButtons.length && !searchInput) return;
-
-    let activeFilter = 'all';
-
-    // Accent-insensitive match ("epices" also finds "épices") — a visitor
-    // typing on a phone shouldn't need the right diacritics to find a dish.
-    function normalize(str) {
-      return str
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-    }
-
-    function applyFilters() {
-      const query = normalize(searchInput?.value.trim() ?? '');
+    function applyFilter(filter) {
       items.forEach((item) => {
         const isVeg = item.getAttribute('data-veg') === 'true';
-        const matchesFilter = activeFilter === 'all' || isVeg;
-        const matchesQuery = !query || normalize(item.getAttribute('data-search') ?? '').includes(query);
-        item.style.display = matchesFilter && matchesQuery ? '' : 'none';
+        const show = filter === 'all' || isVeg;
+        item.style.display = show ? '' : 'none';
       });
+
       categories.forEach((cat) => {
         const hasVisibleItem = Array.from(cat.querySelectorAll('[data-veg]')).some((item) => item.style.display !== 'none');
         cat.style.display = hasVisibleItem ? '' : 'none';
@@ -448,24 +256,10 @@ const path = localizedPath('/menu', lang);
       btn.addEventListener('click', () => {
         filterButtons.forEach((b) => b.classList.remove('is-active'));
         btn.classList.add('is-active');
-        activeFilter = btn.getAttribute('data-filter');
-        applyFilters();
+        applyFilter(btn.getAttribute('data-filter'));
       });
     });
 
-    searchInput?.addEventListener('input', applyFilters);
-
-    // Intercept the jump chips so the scroll target respects scroll-mt
-    // (the sticky order bar's height) the same way as a plain #hash
-    // navigation would — smooth on top of that, not instead of it.
-    jumpChips.forEach((chip) => {
-      chip.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = document.querySelector(chip.getAttribute('href'));
-        target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-
-    applyFilters();
+    applyFilter('all');
   });
 </script>
