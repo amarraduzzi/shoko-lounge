@@ -1,12 +1,31 @@
 ---
 // See HomeContent.astro's top comment for the shared-body-per-route
 // pattern this and every other src/content-pages/*.astro file follows.
+//
+// REDESIGN (cohesion pass, "optie 3"): this page used to be one long text
+// block, then a stats band, then a flat 2x4 video grid — its own rhythm,
+// disconnected from how every other page (especially Home) is built. This
+// version borrows Home's actual pattern instead: photo → text → a single
+// strong full-bleed visual moment → text → a second strong visual moment.
+// Concretely that means:
+//   1. PageHero (photo, unchanged)
+//   2. Short text block (p1)
+//   3. A full-bleed image + pull-quote section, same treatment as Home's
+//      "Signature spotlight" (ken-burns image, text-shadow instead of a
+//      scrim, pull-quote typography) — this page had no equivalent of
+//      that "wow" moment before.
+//   4. Text block (p3) + the stats band right under it
+//   5. The video gallery, rebuilt from a static 4-tile grid into a single
+//      swipeable video at a time (scroll-snap), matching the "one big
+//      video, not four small ones" note from the previous pass — see the
+//      comment above #about-video-track for why, and how the mute/unmute
+//      reuses the exact pattern already proven on Home's #bombay-video.
 import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import Ornament from '../components/Ornament.astro';
 import { siteConfig } from '../config/site.config';
 import { instagramProof } from '../content/social-proof';
-import { t, localizedPath, type Language } from '../i18n/languages';
+import { t, arrow, localizedPath, type Language } from '../i18n/languages';
 import { place } from '../i18n/ui';
 
 interface Props {
@@ -51,6 +70,17 @@ const copy = {
     en: `Beyond the plate, ${name} is designed as a place to live in: plush gold decor, signature cocktails, and themed nights that turn the lounge into a stage. It's this whole, more than any single dish, that keeps our guests coming back.`,
     ar: `إلى ما وراء الطبق، صُمم ${name} كمكان للعيش فيه: ديكور ذهبي فاخر، كوكتيلات مميزة، وأمسيات خاصة تحول اللاونج إلى مسرح. هذا الكل، أكثر من أي طبق بمفرده، هو ما يجعل ضيوفنا يعودون دائمًا.`,
   },
+  // New: kicker + alt + CTA for the full-bleed "visual moment" section
+  // (step 3 above). p2 does double duty as the pull-quote text there —
+  // it already reads like a standalone line, same as Home's
+  // platSignatureQuote.
+  momentKicker: { fr: 'Notre cuisine', en: 'Our kitchen', ar: 'مطبخنا' },
+  momentAlt: {
+    fr: `Assiette signature servie chez ${name}`,
+    en: `Signature plate served at ${name}`,
+    ar: `طبق مميز يُقدَّم في ${name}`,
+  },
+  momentCta: { fr: 'Découvrir la carte', en: 'Discover the menu', ar: 'اكتشف القائمة' },
   statDepuis: { fr: 'ouvert depuis 2022', en: 'open since 2022', ar: 'مفتوح منذ 2022' },
   statPlats: { fr: 'plats préparés à la commande', en: 'dishes cooked to order', ar: 'أطباق تُحضّر عند الطلب' },
   statInstagram: { fr: 'abonnés sur Instagram', en: 'followers on Instagram', ar: 'متابع على إنستغرام' },
@@ -69,11 +99,11 @@ const copy = {
 
 const path = localizedPath('/a-propos', lang);
 
-// Vertical promo clips supplied by the client — same treatment as the
-// Shoko Nights video on the homepage (phone-shaped frame, muted autoplay
-// loop, unmuted only while actually in view). Reuses that exact homepage
-// clip as the first tile instead of duplicating the file, then three more
-// dedicated to this page.
+// Vertical promo clips supplied by the client — unchanged from before, only
+// the presentation below changes (single swipeable carousel instead of a
+// static 2x4 grid). Reuses the homepage's Shoko Nights clip as the first
+// tile instead of duplicating the file, then three more dedicated to this
+// page.
 const galleryVideos = [
   { src: '/videos/shoko-nights.mp4', poster: '/images/shoko-nights-poster.webp' },
   { src: '/videos/about-video-1.mp4', poster: '/images/about-video-1-poster.webp' },
@@ -93,40 +123,71 @@ const galleryVideos = [
     image="/images/interior-1.webp"
     alt={t(copy.heroAlt, lang)}
   />
-  <section class="relative max-w-3xl mx-auto px-5 sm:px-8 pt-12 sm:pt-16 pb-20 overflow-hidden">
-    <!-- Large faded emblem behind the copy — the real gold mark, not a
-         generic decorative shape, used at a scale it can never appear at
-         in the header. A quiet "wow" texture instead of another flat
-         paragraph block. -->
+
+  <!-- Text — just p1 now (was all three paragraphs in one block). Keeps
+       the watermark emblem as the one bit of texture in an otherwise
+       plain text section, same idea as before, just shorter so it reads
+       as an intro rather than the whole story dumped at once. -->
+  <section class="relative max-w-3xl mx-auto px-5 sm:px-8 pt-12 sm:pt-16 pb-14 sm:pb-16 overflow-hidden">
     <img
       src="/images/logo-mark.webp"
       alt=""
       aria-hidden="true"
       class="mark-watermark w-[26rem] h-[26rem] -right-32 -top-16 sm:-right-24"
     />
-    <div class="relative space-y-5 text-sm sm:text-base leading-relaxed" style="color: var(--color-text-muted)" data-reveal>
+    <div class="relative text-sm sm:text-base leading-relaxed" style="color: var(--color-text-muted)" data-reveal>
       <p>{t(copy.p1, lang)}</p>
-      <p>{t(copy.p2, lang)}</p>
+    </div>
+  </section>
+
+  <!-- Visual moment #1 — the "wow" beat this page was missing. Same
+       recipe as Home's Signature spotlight: full-bleed photo, ken-burns
+       drift, text-shadow instead of a scrim so the photo stays clean, and
+       p2 repurposed as a pull-quote instead of sitting in a paragraph
+       block. This is what turns "a page of text with a grid at the
+       bottom" into something with the same rhythm as the rest of the
+       site. -->
+  <section class="relative min-h-[440px] sm:h-[70vh] overflow-hidden" data-reveal="scale">
+    <div class="ken-burns absolute inset-0">
+      <img
+        src="/images/gallery-spread.webp"
+        alt={t(copy.momentAlt, lang)}
+        class="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+      />
+    </div>
+    <div class="relative z-10 h-full flex items-center max-w-7xl mx-auto px-5 sm:px-8">
+      <div class="max-w-md">
+        <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-4 [text-shadow:0_2px_10px_rgba(0,0,0,0.85)]" style="color: var(--color-accent)">
+          {t(copy.momentKicker, lang)}
+        </span>
+        <p class="pull-quote [text-shadow:0_2px_14px_rgba(0,0,0,0.85)]">
+          {t(copy.p2, lang)}
+        </p>
+        <a href={localizedPath('/menu', lang)} class="inline-block mt-6 text-sm font-bold [text-shadow:0_1px_8px_rgba(0,0,0,0.9)]" style="color: var(--color-accent)">
+          {t(copy.momentCta, lang)} {arrow(lang)}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Text — p3, plain, no watermark this time (already used above; a
+       second one back-to-back would read as decoration for its own sake).
+       Sits directly above the stats band so the two read as one
+       "closing" chapter of the story rather than two separate blocks. -->
+  <section class="relative max-w-3xl mx-auto px-5 sm:px-8 pt-14 sm:pt-16 pb-8 sm:pb-10">
+    <div class="text-sm sm:text-base leading-relaxed" style="color: var(--color-text-muted)" data-reveal>
       <p>{t(copy.p3, lang)}</p>
     </div>
   </section>
 
-  <!-- Oversized, unboxed numbers instead of three identical grey tiles.
-       First pass of this looked fine on desktop's 3-column grid but flat
-       on mobile — a border-left divider does nothing once the grid stacks
-       to one column, so it was just three plain lines of text in a row.
-       Fixed: each stat gets its own small icon (so it reads as a distinct
-       moment, not just a number), the divider switches to a horizontal
-       rule on mobile / vertical rule on desktop, and a soft red glow sits
-       behind the whole band so it isn't just another flat tinted box.
-
-       Third stat swapped from a Tripadvisor rating to Instagram followers
-       — see content/social-proof.ts for why (real rating is 3.3/5 on 15
-       reviews with serious negative reviews mixed in; client chose
-       Instagram's real, verifiable follower count instead). -->
+  <!-- Stats band — unchanged from before: icon + oversized number per
+       stat, horizontal divider on mobile / vertical on desktop, soft glow
+       behind the band. Only the top padding shrank slightly since the
+       text above now sits closer to it on purpose. -->
   <div class="section-tint relative overflow-hidden">
     <div class="section-glow" style="width: 340px; height: 340px; background: var(--color-primary); opacity: 0.07; left: 50%; top: -120px; transform: translateX(-50%);"></div>
-    <section class="relative max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <section class="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-10 pb-16 sm:pb-20">
       <div class="grid sm:grid-cols-3 gap-10 sm:gap-6">
         {[
           {
@@ -161,62 +222,66 @@ const galleryVideos = [
     </section>
   </div>
 
-  <!-- Video gallery — the client's own vertical promo clips, in the same
-       phone-frame treatment as the Shoko Nights section on the homepage,
-       laid out side by side (2 cols on mobile, 4 on larger screens) rather
-       than one big player, since these are quick atmosphere glimpses, not
-       a single feature clip. Each video unmutes only while scrolled into
-       view — same IntersectionObserver approach as the homepage, just
-       matched on a shared class since there are several instances here
-       instead of one. -->
+  <!-- Visual moment #2 — the video gallery, rebuilt. It used to be a
+       static 2x4 grid of small tiles, paused until tapped. Now it's a
+       single swipeable carousel: one 9:16 video fills (nearly) the
+       viewport on mobile, the next one peeks in at the edge as an
+       affordance to swipe, and dots below show position. This is the
+       "one big video at a time, not four small ones" version — it reads
+       as a real visual moment (matching the weight of visual moment #1
+       above) instead of a grid of thumbnails.
+
+       Autoplay + mute/unmute reuses the exact pattern already proven on
+       Home's #bombay-video: every clip has `autoplay muted loop` so
+       nothing needs a user gesture to start, and an IntersectionObserver
+       scoped to the scroll track just toggles `.muted` based on which
+       slide is actually centered — no video ever plays audio unless it's
+       the one currently in view, so swiping never produces overlapping
+       sound. Native `controls` stay on as a manual fallback, same reason
+       as elsewhere on this site. -->
   <section id="video-gallery" class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-20 scroll-mt-24">
     <div class="max-w-2xl mb-8 sm:mb-10" data-reveal>
       <p class="font-bold text-sm tracking-widest uppercase" style="color: var(--color-accent)">{t(copy.videoGalleryKicker, lang)}</p>
       <h2 class="font-display text-3xl sm:text-4xl font-semibold mt-2">{t(copy.videoGalleryTitle, lang)}</h2>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+
+    <div
+      id="about-video-track"
+      class="about-video-track flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 sm:mx-0 sm:px-0"
+    >
       {galleryVideos.map((clip, i) => (
-        <div
-          class="relative rounded-2xl p-1.5"
-          style={`background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 16px 40px rgba(0,0,0,0.4); transition-delay: ${i * 80}ms`}
-          data-reveal="scale"
-        >
-          <!-- No autoplay here (unlike the homepage's Shoko Nights clip):
-               these sit lower on the page and four of them starting at once
-               would autoplay four audio-less loops the instant a visitor
-               scrolls past, which reads as noisy rather than inviting. Each
-               stays on its poster frame until the visitor taps play
-               themselves — the custom overlay button below is the trigger,
-               since native per-browser play buttons are too small/inconsistent
-               to rely on as the only way in, especially on mobile. -->
-          <video
-            class="about-gallery-video w-full aspect-[9/16] rounded-xl object-cover"
-            poster={clip.poster}
-            muted
-            loop
-            playsinline
-            controls
-            preload="metadata"
-            aria-label={t(copy.videoGalleryAlt, lang)}
+        <div class="about-video-slide shrink-0 w-[78%] sm:w-[300px] snap-center" data-index={i}>
+          <div
+            class="relative rounded-2xl p-1.5"
+            style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 16px 40px rgba(0,0,0,0.4)"
           >
-            <source src={clip.src} type="video/mp4" />
-          </video>
-          <button
-            type="button"
-            class="about-gallery-play absolute inset-0 flex items-center justify-center rounded-xl transition-opacity"
-            style="background-color: rgba(0,0,0,0.28)"
-            aria-label={t(copy.videoGalleryAlt, lang)}
-          >
-            <span
-              class="flex items-center justify-center w-14 h-14 rounded-full"
-              style="background-color: rgba(255,255,255,0.92); box-shadow: 0 8px 24px rgba(0,0,0,0.4)"
+            <video
+              class="w-full aspect-[9/16] rounded-xl object-cover"
+              poster={clip.poster}
+              autoplay
+              muted
+              loop
+              playsinline
+              controls
+              preload="metadata"
+              aria-label={t(copy.videoGalleryAlt, lang)}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--color-accent)" style="margin-left: 2px">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </span>
-          </button>
+              <source src={clip.src} type="video/mp4" />
+            </video>
+          </div>
         </div>
+      ))}
+    </div>
+
+    <div class="flex justify-center gap-2 mt-5">
+      {galleryVideos.map((_, i) => (
+        <button
+          type="button"
+          class="about-video-dot h-2 rounded-full transition-all"
+          style={`width: ${i === 0 ? '20px' : '8px'}; background-color: ${i === 0 ? 'var(--color-accent)' : 'var(--color-border)'}`}
+          data-index={i}
+          aria-label={`${i + 1}`}
+        ></button>
       ))}
     </div>
   </section>
@@ -225,31 +290,71 @@ const galleryVideos = [
 </Layout>
 
 <script>
-  // Unlike the homepage's Shoko Nights video (which autoplays muted and
-  // only unmutes on scroll — see that file's comment), these clips don't
-  // start on their own at all: each stays paused on its poster frame until
-  // the visitor taps the play overlay, at which point it plays unmuted
-  // (a direct click is a user gesture, so browsers allow sound immediately,
-  // no autoplay workaround needed). The overlay hides once playback starts
-  // and reappears on pause/end so the visitor can tell it's tappable again.
+  // Wrapped in 'astro:page-load' like every other script on this site
+  // (see Layout.astro/Header.astro's comments) — this site has View
+  // Transitions on sitewide, so a plain module script here would only
+  // ever run on a hard refresh, never on a soft nav to this page via the
+  // header. The `data-wired` guard mirrors the same guard used on Home's
+  // #bombay-video so repeated soft-navigations here don't stack up
+  // duplicate IntersectionObservers on the same track.
   document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLElement>('.about-gallery-play').forEach((overlay) => {
-      if (overlay.dataset.wired === 'true') return;
-      overlay.dataset.wired = 'true';
+    const track = document.getElementById('about-video-track');
+    if (!track || track.dataset.wired === 'true') return;
+    track.dataset.wired = 'true';
 
-      const video = overlay.previousElementSibling as HTMLVideoElement | null;
-      if (!video) return;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>('.about-video-slide'));
+    const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('.about-video-dot'));
 
-      const hideOverlay = () => { overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; };
-      const showOverlay = () => { overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; };
-
-      overlay.addEventListener('click', () => {
-        video.muted = false;
-        video.play();
-        hideOverlay();
+    const setActiveDot = (index: number) => {
+      dots.forEach((dot, i) => {
+        const active = i === index;
+        dot.style.backgroundColor = active ? 'var(--color-accent)' : 'var(--color-border)';
+        dot.style.width = active ? '20px' : '8px';
       });
-      video.addEventListener('pause', showOverlay);
-      video.addEventListener('ended', showOverlay);
+    };
+
+    // Same idea as Home's #bombay-video observer: only the slide that's
+    // actually centered in the track gets unmuted. Everything else stays
+    // muted (but keeps playing/looping — cheap, and avoids a re-buffer
+    // every time a visitor swipes back to a clip they already passed).
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target.querySelector('video') as HTMLVideoElement | null;
+          if (!video) return;
+          // Some browsers refuse a scripted unmute outright; that's fine
+          // — the video just stays muted and the native controls (kept on
+          // for exactly this) let the visitor unmute it themselves.
+          video.muted = !entry.isIntersecting;
+          if (entry.isIntersecting) {
+            setActiveDot(Number((entry.target as HTMLElement).dataset.index));
+          }
+        });
+      },
+      { root: track, threshold: 0.6 }
+    );
+    slides.forEach((slide) => observer.observe(slide));
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const index = Number(dot.dataset.index);
+        slides[index]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
     });
+
+    setActiveDot(0);
   });
 </script>
+
+<style>
+  /* Hide the scrollbar on the video track — swiping/dragging is the
+     intended interaction (mirrors a native app carousel), a visible
+     scrollbar under it just adds visual noise. Both properties needed:
+     Firefox reads the first, Chrome/Safari read the pseudo-element. */
+  .about-video-track {
+    scrollbar-width: none;
+  }
+  .about-video-track::-webkit-scrollbar {
+    display: none;
+  }
+</style>
