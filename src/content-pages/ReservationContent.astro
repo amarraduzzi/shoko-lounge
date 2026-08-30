@@ -15,7 +15,26 @@
 // magnetic-button script) does validation and POSTs straight to Supabase's
 // REST API. The site stays fully static (astro.config.mjs's
 // `output: 'static'`); Supabase IS the backend, not a server we run.
+//
+// WOW-FACTOR PASS: the form section used to be two flat black boxes with a
+// border and nothing else — a form, and a plain text list next to it. No
+// photo, no glow, no accent tying it back to the rest of the site (every
+// other page leans on real photography + soft light). Fixed here:
+//   - The whole form+info area now sits on a real ambiance photo (dimmed,
+//     vignetted) instead of flat --color-background, with a soft gold glow
+//     behind it, same recipe as the stats band on the About page.
+//   - The form card itself is now a frosted-glass panel (blurred,
+//     translucent surface, a real drop shadow) floating on that photo,
+//     instead of an opaque box — same depth idiom Home's video cards use.
+//   - "Bon à savoir" traded its bare icons for icon-in-a-ring badges (same
+//     treatment as About's stat icons), so it reads as a set of highlights
+//     instead of a plain list.
+//   - Added a live open/closed indicator right above "Bon à savoir" —
+//     genuinely useful info (is it worth calling right now?) placed where
+//     someone filling out this form would actually want it, not buried in
+//     the footer.
 import Layout from '../layouts/Layout.astro';
+import Ornament from '../components/Ornament.astro';
 import { siteConfig } from '../config/site.config';
 import { t, localizedPath, type Language } from '../i18n/languages';
 import { place } from '../i18n/ui';
@@ -117,6 +136,12 @@ const copy = {
     ar: 'رد سريع، عبر الهاتف أو واتساب',
   },
   trustRatingSuffix: { fr: 'sur Google', en: 'on Google', ar: 'على Google' },
+  // New: live open/closed indicator, computed client-side (see the script
+  // at the bottom) from the same siteConfig.contact.hours already used to
+  // build the time-slot dropdown — one source of truth, no separate config
+  // to keep in sync if opening hours ever change.
+  openNowLabel: { fr: 'Ouvert maintenant', en: 'Open now', ar: 'مفتوح الآن' },
+  closedNowLabel: { fr: 'Fermé maintenant', en: 'Closed now', ar: 'مغلق الآن' },
 } satisfies Record<string, { fr: string; en: string; ar: string }>;
 
 // Time-slot options generated straight from siteConfig.contact.hours — same
@@ -181,154 +206,206 @@ const { googleRating, googleReviewsUrl } = siteConfig.social;
     </div>
   </section>
 
-  <section class="max-w-7xl mx-auto px-5 sm:px-8 py-14 sm:py-20 grid sm:grid-cols-[1.4fr_1fr] gap-10 sm:gap-14 items-start">
-    <!-- The form card -->
+  <!-- Form + info — now full-bleed with a dimmed ambiance photo and a soft
+       glow behind it (see the file-top comment), instead of sitting on
+       flat --color-background like before. mood-cocktail.webp is the same
+       real client photo already used on Home's ambiance grid — reused
+       here rather than a new asset, and dimmed enough (opacity + heavy
+       gradient) that it reads as texture/mood, not a competing subject
+       next to the form. -->
+  <section class="relative overflow-hidden">
+    <img
+      src="/images/mood-cocktail.webp"
+      alt=""
+      aria-hidden="true"
+      class="absolute inset-0 w-full h-full object-cover opacity-20"
+      loading="lazy"
+    />
     <div
-      class="rsv-card rounded-2xl p-6 sm:p-9 max-w-2xl"
-      style="background-color: var(--color-surface); border: 1px solid var(--color-border)"
-      data-reveal
-    >
-      <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style="color: var(--color-accent)">
-        {t(copy.formKicker, lang)}
-      </span>
-      <p class="font-display text-xl sm:text-2xl mb-7" style="color: var(--color-text-primary)">
-        {t(copy.formLead, lang)}
-      </p>
+      class="absolute inset-0"
+      style="background: linear-gradient(180deg, var(--color-background) 0%, rgba(11,11,12,0.88) 18%, rgba(11,11,12,0.94) 100%)"
+    ></div>
+    <div class="section-glow" style="width: 380px; height: 380px; background: var(--color-accent); opacity: 0.12; right: -140px; top: -100px;"></div>
 
-      <form id="reservation-form" novalidate>
-        <div class="grid sm:grid-cols-2 gap-5">
-          <div class="sm:col-span-2">
-            <label class="rsv-label" for="rsv-name">{t(copy.formName, lang)}</label>
-            <input class="rsv-input" type="text" id="rsv-name" name="name" autocomplete="name" required />
-          </div>
-          <div class="sm:col-span-2">
-            <label class="rsv-label" for="rsv-phone">{t(copy.formPhone, lang)}</label>
-            <input class="rsv-input" type="tel" id="rsv-phone" name="phone" autocomplete="tel" required />
-          </div>
-          <div>
-            <label class="rsv-label" for="rsv-date">{t(copy.formDate, lang)}</label>
-            <input class="rsv-input" type="date" id="rsv-date" name="date" required />
-          </div>
-          <div>
-            <label class="rsv-label" for="rsv-time">{t(copy.formTime, lang)}</label>
-            <select class="rsv-input" id="rsv-time" name="time" required>
-              <option value="" disabled selected>{t(copy.formTimePlaceholder, lang)}</option>
-              {timeSlots.map((slot) => <option value={slot}>{slot}</option>)}
-            </select>
-          </div>
-          <div class="sm:col-span-2">
-            <label class="rsv-label" for="rsv-party-size">{t(copy.formPartySize, lang)}</label>
-            <select class="rsv-input" id="rsv-party-size" name="partySize" required>
-              {partySizes.map((n) => <option value={n}>{n}</option>)}
-              <option value="large">{t(copy.formPartySizeLarge, lang)}</option>
-            </select>
-          </div>
-          <div class="sm:col-span-2">
-            <label class="rsv-label" for="rsv-notes">{t(copy.formNotes, lang)}</label>
-            <textarea class="rsv-input" id="rsv-notes" name="notes" rows="3" placeholder={t(copy.formNotesPlaceholder, lang)}></textarea>
-          </div>
-          <!-- Honeypot — invisible to real visitors (off-screen, no label,
-               tabindex -1), but a naive bot filling every input in a form
-               will fill this too. If it's non-empty on submit we quietly
-               pretend success instead of actually posting. Not bulletproof
-               against a targeted bot, but stops the generic form-spam
-               crawlers for free, with zero cost or dependency. -->
-          <div class="rsv-honeypot" aria-hidden="true">
-            <label for="rsv-website">Website</label>
-            <input type="text" id="rsv-website" name="website" tabindex="-1" autocomplete="off" />
-          </div>
-        </div>
-
-        <!-- Large-party note — hidden by default, shown by the script when
-             partySize === 'large'; submit button hides in the same moment
-             so there's exactly one clear next action, not a disabled
-             button next to an explanation. -->
-        <div id="rsv-large-party-note" class="hidden mt-5 rounded-xl p-4 text-sm leading-relaxed" style="background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--color-text-muted)">
-          <p>{t(copy.largePartyNote, lang)}</p>
-          <a href={whatsappHref} target="_blank" rel="noreferrer" class="rsv-btn rsv-btn-filled mt-3">{t(copy.largePartyWhatsapp, lang)}</a>
-        </div>
-
-        <button id="rsv-submit" type="submit" class="rsv-btn rsv-btn-filled mt-6 w-full sm:w-auto">
-          <span id="rsv-submit-label">{t(copy.formSubmit, lang)}</span>
-        </button>
-
-        <!-- aria-live so the outcome is announced to screen readers even
-             though nothing on the page navigates or reloads. -->
-        <div id="rsv-status" class="mt-5" aria-live="polite"></div>
-      </form>
-    </div>
-
-    <!-- Practical info alongside the form — same icon-row language as the
-         Contact page's info list, kept short: this page's job is the form,
-         not restating everything Contact already covers. -->
-    <div class="sm:sticky sm:top-28" data-reveal style="transition-delay: 100ms">
-      <h2 class="text-xs font-bold uppercase tracking-[0.2em] mb-4" style="color: var(--color-accent)">{t(copy.infoKicker, lang)}</h2>
-      <div class="space-y-4 text-sm" style="color: var(--color-text-primary)">
-        <div class="flex items-start gap-3">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.6" class="shrink-0 mt-0.5" style="color: var(--color-accent)">
-            <path d="M12 7v5l3 3 M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <div>
-            <p class="font-bold text-xs uppercase tracking-wide" style="color: var(--color-text-muted)">{t(copy.infoHours, lang)}</p>
-            <p class="mt-1">{t(siteConfig.contact.openingHours, lang)}</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.6" class="shrink-0 mt-0.5" style="color: var(--color-accent)">
-            <path d="M4 4h4l2 5-2.5 1.5a11 11 0 005 5L14 13l5 2v4a2 2 0 01-2 2A15 15 0 014 6a2 2 0 012-2z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <div>
-            <p class="font-bold text-xs uppercase tracking-wide" style="color: var(--color-text-muted)">{t(place.city, lang)}</p>
-            <p class="mt-1">{siteConfig.contact.address}</p>
-          </div>
-        </div>
-        <!-- Shoko Nights — the themed-night feature (see Home's own
-             section for the video). Someone reserving specifically for a
-             Friday should know what they're walking into before they show
-             up, not find out from a poster at the door. -->
-        <div class="flex items-start gap-3">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.6" class="shrink-0 mt-0.5" style="color: var(--color-accent)">
-            <path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <div>
-            <p class="font-bold text-xs uppercase tracking-wide" style="color: var(--color-text-muted)">{t(copy.infoBombayLabel, lang)}</p>
-            <p class="mt-1">{t(copy.infoBombayText, lang)}</p>
-          </div>
-        </div>
-        <p class="text-xs leading-relaxed pt-2" style="color: var(--color-text-muted); border-top: 1px solid var(--color-border)">
-          {t(copy.infoConfirm, lang)}
+    <div class="relative max-w-7xl mx-auto px-5 sm:px-8 py-14 sm:py-20 grid sm:grid-cols-[1.4fr_1fr] gap-10 sm:gap-14 items-start">
+      <!-- The form card — now a frosted-glass panel (blurred, translucent
+           surface) with a real drop shadow instead of a flat opaque box,
+           so it visibly "floats" on the ambiance photo behind it. Same
+           shadow weight as Home's #bombay-video card. -->
+      <div
+        class="rsv-card rounded-2xl p-6 sm:p-9 max-w-2xl"
+        style="background-color: color-mix(in srgb, var(--color-surface) 88%, transparent); border: 1px solid var(--color-border); backdrop-filter: blur(14px); box-shadow: 0 24px 60px rgba(0,0,0,0.45)"
+        data-reveal
+      >
+        <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style="color: var(--color-accent)">
+          {t(copy.formKicker, lang)}
+        </span>
+        <p class="font-display text-xl sm:text-2xl mb-7" style="color: var(--color-text-primary)">
+          {t(copy.formLead, lang)}
         </p>
+
+        <form id="reservation-form" novalidate>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div class="sm:col-span-2">
+              <label class="rsv-label" for="rsv-name">{t(copy.formName, lang)}</label>
+              <input class="rsv-input" type="text" id="rsv-name" name="name" autocomplete="name" required />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="rsv-label" for="rsv-phone">{t(copy.formPhone, lang)}</label>
+              <input class="rsv-input" type="tel" id="rsv-phone" name="phone" autocomplete="tel" required />
+            </div>
+            <div>
+              <label class="rsv-label" for="rsv-date">{t(copy.formDate, lang)}</label>
+              <input class="rsv-input" type="date" id="rsv-date" name="date" required />
+            </div>
+            <div>
+              <label class="rsv-label" for="rsv-time">{t(copy.formTime, lang)}</label>
+              <select class="rsv-input" id="rsv-time" name="time" required>
+                <option value="" disabled selected>{t(copy.formTimePlaceholder, lang)}</option>
+                {timeSlots.map((slot) => <option value={slot}>{slot}</option>)}
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="rsv-label" for="rsv-party-size">{t(copy.formPartySize, lang)}</label>
+              <select class="rsv-input" id="rsv-party-size" name="partySize" required>
+                {partySizes.map((n) => <option value={n}>{n}</option>)}
+                <option value="large">{t(copy.formPartySizeLarge, lang)}</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="rsv-label" for="rsv-notes">{t(copy.formNotes, lang)}</label>
+              <textarea class="rsv-input" id="rsv-notes" name="notes" rows="3" placeholder={t(copy.formNotesPlaceholder, lang)}></textarea>
+            </div>
+            <!-- Honeypot — invisible to real visitors (off-screen, no label,
+                 tabindex -1), but a naive bot filling every input in a form
+                 will fill this too. If it's non-empty on submit we quietly
+                 pretend success instead of actually posting. Not bulletproof
+                 against a targeted bot, but stops the generic form-spam
+                 crawlers for free, with zero cost or dependency. -->
+            <div class="rsv-honeypot" aria-hidden="true">
+              <label for="rsv-website">Website</label>
+              <input type="text" id="rsv-website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+          </div>
+
+          <!-- Large-party note — hidden by default, shown by the script when
+               partySize === 'large'; submit button hides in the same moment
+               so there's exactly one clear next action, not a disabled
+               button next to an explanation. -->
+          <div id="rsv-large-party-note" class="hidden mt-5 rounded-xl p-4 text-sm leading-relaxed" style="background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--color-text-muted)">
+            <p>{t(copy.largePartyNote, lang)}</p>
+            <a href={whatsappHref} target="_blank" rel="noreferrer" class="rsv-btn rsv-btn-filled mt-3">{t(copy.largePartyWhatsapp, lang)}</a>
+          </div>
+
+          <button id="rsv-submit" type="submit" class="rsv-btn rsv-btn-filled mt-6 w-full sm:w-auto">
+            <span id="rsv-submit-label">{t(copy.formSubmit, lang)}</span>
+          </button>
+
+          <!-- aria-live so the outcome is announced to screen readers even
+               though nothing on the page navigates or reloads. -->
+          <div id="rsv-status" class="mt-5" aria-live="polite"></div>
+        </form>
       </div>
 
-      <!-- Trust/warmth row — a real, unfabricated rating (see the standing
-           note on siteConfig.social above) plus a plain-language promise on
-           response speed, so the form isn't the only thing on this side of
-           the page: a first-time visitor gets a small reason to trust the
-           process before they hand over their phone number. -->
-      <div class="flex flex-wrap gap-x-5 gap-y-3 mt-6 pt-6" style="border-top: 1px solid var(--color-border)">
-        {googleRating && (
-          <a
-            href={googleReviewsUrl}
-            target="_blank"
-            rel="noreferrer"
-            class="flex items-center gap-1.5 text-sm font-semibold"
-            style="color: var(--color-text-primary)"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--color-accent)" class="shrink-0">
-              <path d="M12 2.5l2.9 6.3 6.9.7-5.2 4.7 1.5 6.8-6.1-3.6-6.1 3.6 1.5-6.8-5.2-4.7 6.9-.7z" />
-            </svg>
-            {googleRating} <span class="font-normal" style="color: var(--color-text-muted)">{t(copy.trustRatingSuffix, lang)}</span>
-          </a>
-        )}
-        <span class="flex items-center gap-1.5 text-sm" style="color: var(--color-text-muted)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
-            <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
-          </svg>
-          {t(copy.trustResponse, lang)}
+      <!-- Practical info alongside the form — same icon-row language as the
+           Contact page's info list, kept short: this page's job is the form,
+           not restating everything Contact already covers. Icons now sit in
+           a small gold-ring badge (was a bare icon before) — same treatment
+           as the stat icons on the About page, so this reads as a set of
+           highlights rather than a plain bullet list. -->
+      <div class="sm:sticky sm:top-28" data-reveal style="transition-delay: 100ms">
+        <!-- Live open/closed indicator — computed client-side from
+             siteConfig.contact.hours (see the script at the bottom).
+             Placed first, right above "Bon à savoir", since whether it's
+             worth calling right now is genuinely useful to someone about
+             to fill out this form — not just trivia for the footer. Falls
+             back to the plain opening-hours line until the script runs,
+             so there's no blank flash before JS kicks in. -->
+        <span
+          id="rsv-open-badge"
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-5"
+          style="border: 1px solid var(--color-border); color: var(--color-text-primary); background-color: color-mix(in srgb, var(--color-surface) 70%, transparent); backdrop-filter: blur(6px)"
+        >
+          <span id="rsv-open-dot" class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: var(--color-text-muted)"></span>
+          <span id="rsv-open-text">{t(siteConfig.contact.openingHours, lang)}</span>
         </span>
+
+        <h2 class="text-xs font-bold uppercase tracking-[0.2em] mb-4" style="color: var(--color-accent)">{t(copy.infoKicker, lang)}</h2>
+        <div class="space-y-4 text-sm" style="color: var(--color-text-primary)">
+          <div class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-9 h-9 rounded-full shrink-0" style="background-color: color-mix(in srgb, var(--color-accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.6" style="color: var(--color-accent)">
+                <path d="M12 7v5l3 3 M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <div>
+              <p class="font-bold text-xs uppercase tracking-wide" style="color: var(--color-text-muted)">{t(copy.infoHours, lang)}</p>
+              <p class="mt-1">{t(siteConfig.contact.openingHours, lang)}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-9 h-9 rounded-full shrink-0" style="background-color: color-mix(in srgb, var(--color-accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.6" style="color: var(--color-accent)">
+                <path d="M4 4h4l2 5-2.5 1.5a11 11 0 005 5L14 13l5 2v4a2 2 0 01-2 2A15 15 0 014 6a2 2 0 012-2z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <div>
+              <p class="font-bold text-xs uppercase tracking-wide" style="color: var(--color-text-muted)">{t(place.city, lang)}</p>
+              <p class="mt-1">{siteConfig.contact.address}</p>
+            </div>
+          </div>
+          <!-- Shoko Nights — the themed-night feature (see Home's own
+               section for the video). Someone reserving specifically for a
+               Friday should know what they're walking into before they show
+               up, not find out from a poster at the door. -->
+          <div class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-9 h-9 rounded-full shrink-0" style="background-color: color-mix(in srgb, var(--color-accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.6" style="color: var(--color-accent)">
+                <path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <div>
+              <p class="font-bold text-xs uppercase tracking-wide" style="color: var(--color-text-muted)">{t(copy.infoBombayLabel, lang)}</p>
+              <p class="mt-1">{t(copy.infoBombayText, lang)}</p>
+            </div>
+          </div>
+          <p class="text-xs leading-relaxed pt-2" style="color: var(--color-text-muted); border-top: 1px solid var(--color-border)">
+            {t(copy.infoConfirm, lang)}
+          </p>
+        </div>
+
+        <!-- Trust/warmth row — a real, unfabricated rating (see the standing
+             note on siteConfig.social above) plus a plain-language promise on
+             response speed, so the form isn't the only thing on this side of
+             the page: a first-time visitor gets a small reason to trust the
+             process before they hand over their phone number. -->
+        <div class="flex flex-wrap gap-x-5 gap-y-3 mt-6 pt-6" style="border-top: 1px solid var(--color-border)">
+          {googleRating && (
+            <a
+              href={googleReviewsUrl}
+              target="_blank"
+              rel="noreferrer"
+              class="flex items-center gap-1.5 text-sm font-semibold"
+              style="color: var(--color-text-primary)"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--color-accent)" class="shrink-0">
+                <path d="M12 2.5l2.9 6.3 6.9.7-5.2 4.7 1.5 6.8-6.1-3.6-6.1 3.6 1.5-6.8-5.2-4.7 6.9-.7z" />
+              </svg>
+              {googleRating} <span class="font-normal" style="color: var(--color-text-muted)">{t(copy.trustRatingSuffix, lang)}</span>
+            </a>
+          )}
+          <span class="flex items-center gap-1.5 text-sm" style="color: var(--color-text-muted)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+              <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
+            </svg>
+            {t(copy.trustResponse, lang)}
+          </span>
+        </div>
       </div>
     </div>
   </section>
+
+  <Ornament />
 </Layout>
 
 <style>
@@ -520,6 +597,8 @@ const { googleRating, googleReviewsUrl } = siteConfig.social;
     supabaseUrl,
     supabaseAnonKey,
     whatsappHref,
+    openHour: open,
+    closeHour: close,
     labels: {
       submitting: t(copy.formSubmitting, lang),
       submit: t(copy.formSubmit, lang),
@@ -530,6 +609,8 @@ const { googleRating, googleReviewsUrl } = siteConfig.social;
       errorTitle: t(copy.errorTitle, lang),
       errorBody: t(copy.errorBody, lang),
       errorCallOrWhatsapp: t(copy.errorCallOrWhatsapp, lang),
+      openNow: t(copy.openNowLabel, lang),
+      closedNow: t(copy.closedNowLabel, lang),
     },
   }}
 >
@@ -555,6 +636,22 @@ const { googleRating, googleReviewsUrl } = siteConfig.social;
       const today = new Date();
       const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       dateInput.min = iso;
+    }
+
+    // Live open/closed indicator — same "real now, in the visitor's own
+    // browser" approach as the date floor above. Handles overnight hours
+    // (e.g. open 19:00, close 02:00 the next day) by checking whether
+    // closing hour is numerically before opening hour.
+    const openBadge = document.getElementById('rsv-open-badge');
+    const openDot = document.getElementById('rsv-open-dot');
+    const openText = document.getElementById('rsv-open-text');
+    if (openBadge && openDot && openText) {
+      const now = new Date();
+      const hour = now.getHours() + now.getMinutes() / 60;
+      const isOpen = closeHour > openHour ? hour >= openHour && hour < closeHour : hour >= openHour || hour < closeHour;
+      openDot.style.backgroundColor = isOpen ? 'var(--color-accent)' : 'var(--color-text-muted)';
+      openText.textContent = isOpen ? labels.openNow : labels.closedNow;
+      openBadge.style.borderColor = isOpen ? 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border))' : 'var(--color-border)';
     }
 
     partySelect?.addEventListener('change', () => {
