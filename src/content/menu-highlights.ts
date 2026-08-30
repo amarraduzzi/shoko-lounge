@@ -60,12 +60,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'تونة حمراء، أفوكادو، واكامي، لمسات من زيت السمسم المحمّص والزنجبيل الطازج، تُقدَّم مع رقائق الأرز.',
         },
         priceMAD: 95,
-        image: '/images/dish-tartare-thon.webp',
-        imageAlt: {
-          fr: 'Tartare de thon rouge et avocat dressé en cercle',
-          en: 'Red tuna and avocado tartare, plated in a ring',
-          ar: 'تارتار التونة الحمراء والأفوكادو مُقدَّم على شكل دائري',
-        },
       },
       {
         name: 'Avocat aux gambas',
@@ -84,12 +78,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'ساشيمي سلمون طازج، تتبيلة صويا-حمضيات، سمسم، برادة كمأة وبصل مقرمش. يحتوي على الغلوتين.',
         },
         priceMAD: 100,
-        image: '/images/dish-saumon-truffe.webp',
-        imageAlt: {
-          fr: 'Saumon mariné à la truffe, dégusté aux baguettes',
-          en: 'Truffle-marinated salmon, enjoyed with chopsticks',
-          ar: 'سلمون متبّل بالكمأة، يُقدَّم بعيدان الأكل',
-        },
       },
       {
         name: 'Ô César',
@@ -208,12 +196,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'شريحة سلمون، صلصة تيرياكي منزلية، أرز بسمتي وخضروات سوتيه.',
         },
         priceMAD: 210,
-        image: '/images/dish-saumon-teriyaki.webp',
-        imageAlt: {
-          fr: 'Pavé de saumon laqué au Teriyaki, dressé sur assiette',
-          en: 'Teriyaki-glazed salmon fillet, plated',
-          ar: 'شريحة سلمون مطلية بصلصة التيرياكي',
-        },
       },
       {
         name: 'Filet de bœuf',
@@ -223,12 +205,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'فيليه لحم بقري مشوي، صلصة الفلفل وبطاطس مهروسة. يحتوي على منتجات الألبان.',
         },
         priceMAD: 220,
-        image: '/images/dish-filet-boeuf.webp',
-        imageAlt: {
-          fr: 'Filet de bœuf grillé, sauce poivre et purée de pommes de terre',
-          en: 'Grilled beef fillet, pepper sauce and mashed potatoes',
-          ar: 'فيليه لحم بقري مشوي مع صلصة الفلفل وبطاطس مهروسة',
-        },
       },
     ],
   },
@@ -311,12 +287,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'سلمون وجمبري تمبورا، جبنة كريمية وأفوكادو، مع مايونيز ياباني وصلصة أوناغي وتوبيكو. يحتوي على منتجات الألبان والغلوتين.',
         },
         priceMAD: 150,
-        image: '/images/dish-nara-roll.webp',
-        imageAlt: {
-          fr: 'Rolls Nara croustillants garnis de tobiko',
-          en: 'Crunchy Nara rolls topped with tobiko',
-          ar: 'لفائف نارا المقرمشة مع التوبيكو',
-        },
       },
       {
         name: 'Yamagata',
@@ -367,12 +337,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'جمبري تمبورا خفيف مغطى بصلصة أيولي حارة، برادة ليمون أخضر وثوم معمّر. يحتوي على الغلوتين.',
         },
         priceMAD: 90,
-        image: '/images/dish-rock-shrimps.webp',
-        imageAlt: {
-          fr: 'Bol de Rock Shrimps en tempura, sauce épicée',
-          en: 'Bowl of tempura Rock Shrimps in spicy sauce',
-          ar: 'وعاء من الجمبري المقرمش بصلصة حارة',
-        },
       },
       {
         name: 'Gyoza au fromage et truffe',
@@ -400,12 +364,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'رافيولي ياباني محشو بفيليه لحم بقري، مع زبدة الميسو الأبيض. يحتوي على منتجات الألبان والغلوتين.',
         },
         priceMAD: 95,
-        image: '/images/dish-gyoza-umami.webp',
-        imageAlt: {
-          fr: 'Gyoza au bœuf Umami saisi, présenté aux baguettes',
-          en: 'Seared beef Umami gyoza, presented with chopsticks',
-          ar: 'غيوزا اللحم البقري أومامي مقدَّمة بعيدان الأكل',
-        },
       },
     ],
   },
@@ -501,12 +459,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
         name: 'Amaretto Sour',
         description: { fr: 'Amaretto, citron, sucre de canne. Contient blanc d\'œuf.', en: 'Amaretto, lemon, cane sugar. Contains egg white.', ar: 'أماريتو، ليمون، سكر القصب. يحتوي على بياض البيض.' },
         priceMAD: 95,
-        image: '/images/cocktail-amaretto-sour.webp',
-        imageAlt: {
-          fr: 'Amaretto Sour garni de noix de pécan',
-          en: 'Amaretto Sour garnished with pecans',
-          ar: 'أماريتو ساور مزيَّن بالبيكان',
-        },
       },
       {
         name: 'Espresso Martini',
@@ -527,12 +479,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
         name: 'Red Velvet',
         description: { fr: 'Gin, framboise, citron, vanille. Contient blanc d\'œuf.', en: 'Gin, raspberry, lemon, vanilla. Contains egg white.', ar: 'جين، توت العليق، ليمون، فانيليا. يحتوي على بياض البيض.' },
         priceMAD: 100,
-        image: '/images/cocktail-red-velvet.webp',
-        imageAlt: {
-          fr: 'Cocktail Red Velvet garni d\'une tranche d\'agrume séchée',
-          en: 'Red Velvet cocktail garnished with a dried citrus wheel',
-          ar: 'كوكتيل ريد فيلفيت مزيَّن بشريحة حمضيات مجففة',
-        },
       },
       {
         name: 'Piña Colada',
