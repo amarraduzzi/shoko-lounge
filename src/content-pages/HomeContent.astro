@@ -44,11 +44,14 @@ const copy = {
     en: `${siteConfig.identity.name} is a ${primaryKeyword} in ${city}. Contemporary fusion cuisine, signature cocktails and a lounge atmosphere, from dinner until late.`,
     ar: `${siteConfig.identity.name} هو ${primaryKeyword} في ${city}. مطبخ فيوجن معاصر، كوكتيلات مميزة، وأجواء لاونج حتى وقت متأخر من الليل.`,
   },
-  // Same keyword-first reasoning as metaTitle above, applied to the H1.
+  // Brand-first, written as an actual headline rather than a raw keyword
+  // string — the metaTitle above stays keyword-first for search snippets,
+  // but the on-page H1 is what visitors actually read, so it needs to
+  // read like a sentence, not an SEO slug.
   heroTitle: {
-    fr: `${primaryKeyword} à ${city} — ${siteConfig.identity.name}`,
-    en: `${primaryKeyword} in ${city} — ${siteConfig.identity.name}`,
-    ar: `${primaryKeyword} في ${city} — ${siteConfig.identity.name}`,
+    fr: `${siteConfig.identity.name} — Restaurant Fusion & Cocktails à ${city}`,
+    en: `${siteConfig.identity.name} — Fusion Dining & Cocktails in ${city}`,
+    ar: `${siteConfig.identity.name} — فيوجن وكوكتيلات في ${city}`,
   },
   heroSubtitle: {
     fr: 'Un univers culinaire entre fusion contemporaine et inventive, dans une ambiance lounge feutrée au cœur de la ville.',
@@ -261,7 +264,7 @@ const path = localizedPath('/', lang);
         </p>
         <div class="mt-5 flex flex-wrap gap-3">
           <Button href={orderCtaLabel.href} variant="cta">{orderCtaLabel.label}</Button>
-          <Button href={localizedPath('/reservation', lang)} variant="outline">{t(common.reserverUneTable, lang)}</Button>
+          <Button href={localizedPath('/menu', lang)} variant="outline">{t(common.voirLeMenuComplet, lang)}</Button>
         </div>
         <p class="mt-4 flex items-center gap-2 text-sm [text-shadow:0_1px_8px_rgba(0,0,0,0.9)] sm:[text-shadow:none]" style="color: var(--color-text-muted)">
           <span aria-hidden="true" style="text-shadow: 0 1px 8px rgba(0,0,0,0.9)">📷</span>

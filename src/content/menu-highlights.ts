@@ -443,12 +443,6 @@ export const menuHighlights: MenuHighlightCategory[] = [
   },
   {
     label: { fr: 'Sip — Cocktails', en: 'Sip — Cocktails', ar: 'كوكتيلات' },
-    image: '/images/cocktail-category.webp',
-    imageAlt: {
-      fr: 'Cocktail signature dressé au bar, garni d\'un zeste d\'agrume séché',
-      en: 'Signature cocktail crafted at the bar, garnished with a dried citrus twist',
-      ar: 'كوكتيل مميز يُحضَّر على البار، مزيَّن بقشرة حمضيات مجففة',
-    },
     items: [
       {
         name: 'Pornstar Martini',
