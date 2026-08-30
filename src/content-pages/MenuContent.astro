@@ -193,42 +193,31 @@ const path = localizedPath('/menu', lang);
   {menuHighlights.map((category, i) => (
     <div id={`cat-${i}`} class={`scroll-mt-28 sm:scroll-mt-32 ${i % 2 === 1 ? 'section-tint-warm' : ''}`} data-menu-category>
       <section class="max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
-        <div class={category.image ? 'grid sm:grid-cols-[minmax(0,15rem)_1fr] gap-6 sm:gap-8 items-start' : ''}>
-          {category.image && (
-            <div class="photo-frame rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-square" data-reveal="scale">
-              <img src={category.image} alt={category.imageAlt ? t(category.imageAlt, lang) : t(category.label, lang)} class="w-full h-full object-cover" loading="lazy" />
-            </div>
-          )}
-          <div>
-            <h2
-              class="font-display text-2xl font-semibold mb-5 pb-3 flex items-baseline gap-3"
-              style="color: var(--color-text-primary); border-bottom: 1px solid var(--color-border)"
-            >
-              <span class="text-xs font-bold" style="color: var(--color-accent)">{String(i + 1).padStart(2, '0')}</span>
-              {t(category.label, lang)}
-            </h2>
-            <div class="grid sm:grid-cols-2 gap-4">
-              {category.items.map((item, j) => (
-                <div
-                  class="card-lift flex items-start gap-4 rounded-xl p-4"
-                  style={`background-color: ${i % 2 === 1 ? 'color-mix(in srgb, var(--color-primary-dark) 14%, var(--color-surface-muted))' : 'var(--color-surface)'}; border: 1px solid var(--color-border); transition-delay: ${j * 70}ms`}
-                  data-reveal
-                  data-veg={item.vegetarian ? 'true' : 'false'}
-                  data-search={`${item.name} ${t(item.description, lang)}`}
-                >
-                  {item.image && (
-                    <div class="photo-frame shrink-0 rounded-lg overflow-hidden w-16 h-16 sm:w-20 sm:h-20">
-                      <img src={item.image} alt={item.imageAlt ? t(item.imageAlt, lang) : item.name} class="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                  )}
-                  <div class="min-w-0 flex-1">
-                    <h3 class="menu-item-name font-display font-semibold" style="color: var(--color-text-primary)">
-                      {item.name}
-                      {item.vegetarian && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.4" stroke-linejoin="round" class="inline-block align-[1px] ms-1" aria-label={t(common.vegetarienUniquement, lang)}>
-                          <path d="M12 3c-1.5 3-4.5 4.5-4.5 8.5a4.5 4.5 0 009 0C16.5 7.5 13.5 6 12 3z" />
-                        </svg>
-                      )}
+        <div>
+          <h2
+            class="font-display text-2xl font-semibold mb-5 pb-3 flex items-baseline gap-3"
+            style="color: var(--color-text-primary); border-bottom: 1px solid var(--color-border)"
+          >
+            <span class="text-xs font-bold" style="color: var(--color-accent)">{String(i + 1).padStart(2, '0')}</span>
+            {t(category.label, lang)}
+          </h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {category.items.map((item, j) => (
+              <div
+                class="card-lift flex items-start gap-4 rounded-xl p-4"
+                style={`background-color: ${i % 2 === 1 ? 'color-mix(in srgb, var(--color-primary-dark) 14%, var(--color-surface-muted))' : 'var(--color-surface)'}; border: 1px solid var(--color-border); transition-delay: ${j * 70}ms`}
+                data-reveal
+                data-veg={item.vegetarian ? 'true' : 'false'}
+                data-search={`${item.name} ${t(item.description, lang)}`}
+              >
+                <div class="min-w-0 flex-1">
+                  <h3 class="menu-item-name font-display font-semibold" style="color: var(--color-text-primary)">
+                    {item.name}
+                    {item.vegetarian && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.4" stroke-linejoin="round" class="inline-block align-[1px] ms-1" aria-label={t(common.vegetarienUniquement, lang)}>
+                        <path d="M12 3c-1.5 3-4.5 4.5-4.5 8.5a4.5 4.5 0 009 0C16.5 7.5 13.5 6 12 3z" />
+                      </svg>
+                    )}
                     </h3>
                     <p class="text-sm mt-1" style="color: var(--color-text-muted)">{t(item.description, lang)}</p>
                   </div>
@@ -237,7 +226,6 @@ const path = localizedPath('/menu', lang);
               ))}
             </div>
           </div>
-        </div>
       </section>
     </div>
   ))}
