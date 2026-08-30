@@ -27,9 +27,9 @@ const copy = {
     ar: `القائمة — ${primaryKeyword} في ${city} | ${name}`,
   },
   metaDescription: {
-    fr: `Découvrez le menu complet de ${name}, ${primaryKeyword} à ${city} : entrées, plats tandoori, biryani et pains naan. Commandez en ligne ou sur place.`,
-    en: `Discover the full menu of ${name}, ${primaryKeyword} in ${city}: starters, tandoori dishes, biryani and naan bread. Order online or dine in.`,
-    ar: `اكتشف القائمة الكاملة لـ${name}, ${primaryKeyword} في ${city}: مقبلات، أطباق تندوري، برياني وخبز نان. اطلب أونلاين أو تناول الطعام في المطعم.`,
+    fr: `Découvrez le menu complet de ${name}, ${primaryKeyword} à ${city} : sushis, plats fusion asiatique et cocktails signature. Réservez votre table ou commandez en ligne.`,
+    en: `Discover the full menu of ${name}, ${primaryKeyword} in ${city}: sushi, Asian fusion dishes and signature cocktails. Book your table or order online.`,
+    ar: `اكتشف القائمة الكاملة لـ${name}, ${primaryKeyword} في ${city}: سوشي، أطباق فيوجن آسيوية وكوكتيلات مميزة. احجز طاولتك أو اطلب أونلاين.`,
   },
   heroAlt: {
     fr: `Plats du menu de ${name}`,
@@ -43,6 +43,9 @@ const copy = {
     ar: 'تشكيلة من أطباقنا المميزة. القائمة الكاملة، بجميع الخيارات والإضافات، متوفرة عند الطلب.',
   },
   readyToOrder: { fr: 'Prêt à commander ?', en: 'Ready to order?', ar: 'جاهز للطلب؟' },
+  searchPlaceholder: { fr: 'Rechercher un plat…', en: 'Search a dish…', ar: 'ابحث عن طبق…' },
+  searchLabel: { fr: 'Rechercher dans le menu', en: 'Search the menu', ar: 'البحث في القائمة' },
+  jumpNavLabel: { fr: 'Aller à une catégorie', en: 'Jump to a category', ar: 'الانتقال إلى قسم' },
 } satisfies Record<string, { fr: string; en: string; ar: string }>;
 
 const menuJsonLd = {
@@ -80,7 +83,7 @@ const path = localizedPath('/menu', lang);
   <section class="relative min-h-[420px] sm:h-[64vh] flex items-end overflow-hidden" data-reveal="scale">
     <div class="ken-burns absolute inset-0">
       <img
-        src="/images/gallery-spread.webp"
+        src="/images/dish-nara-roll.webp"
         alt={t(copy.heroAlt, lang)}
         class="absolute inset-0 w-full h-full object-cover"
       />
@@ -120,9 +123,31 @@ const path = localizedPath('/menu', lang);
        vegetarian is the one dietary fact readable straight off each dish's
        own description; see menu-highlights.ts's comment for why. Also the
        scroll anchor every category's "back to top" link jumps to. -->
-  <section id="menu-options" class="max-w-7xl mx-auto px-5 sm:px-8 pb-6 flex flex-wrap items-center gap-2 scroll-mt-24" data-reveal>
-    <button type="button" class="menu-filter-btn is-active" data-filter="all">{t(common.toutLeMenu, lang)}</button>
-    <button type="button" class="menu-filter-btn" data-filter="vegetarian">🌱 {t(common.vegetarienUniquement, lang)}</button>
+  <section id="menu-options" class="max-w-7xl mx-auto px-5 sm:px-8 pb-6 scroll-mt-24" data-reveal>
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4">
+      <div class="menu-search-wrap sm:max-w-xs w-full">
+        <svg class="menu-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input
+          type="text"
+          id="menu-search"
+          class="menu-search-input"
+          placeholder={t(copy.searchPlaceholder, lang)}
+          aria-label={t(copy.searchLabel, lang)}
+        />
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="menu-filter-btn is-active" data-filter="all">{t(common.toutLeMenu, lang)}</button>
+        <button type="button" class="menu-filter-btn" data-filter="vegetarian">🌱 {t(common.vegetarienUniquement, lang)}</button>
+      </div>
+    </div>
+    <nav class="menu-jump-scroll" aria-label={t(copy.jumpNavLabel, lang)}>
+      {menuHighlights.map((category, i) => (
+        <a href={`#cat-${i}`} class="menu-jump-chip" data-jump>{t(category.label, lang)}</a>
+      ))}
+    </nav>
   </section>
 
   <!-- Alternating band now goes warm (--color-primary-dark) instead of
@@ -130,7 +155,7 @@ const path = localizedPath('/menu', lang);
        here rather than À propos/Avis because it's food, and warmth fits
        a menu the way it doesn't fit an editorial about-page. -->
   {menuHighlights.map((category, i) => (
-    <div class={i % 2 === 1 ? 'section-tint-warm' : ''} data-menu-category>
+    <div id={`cat-${i}`} class={`scroll-mt-28 sm:scroll-mt-32 ${i % 2 === 1 ? 'section-tint-warm' : ''}`} data-menu-category>
       <section class="max-w-7xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
         <div class={category.image ? 'grid sm:grid-cols-[minmax(0,15rem)_1fr] gap-6 sm:gap-8 items-start' : ''}>
           {category.image && (
@@ -153,6 +178,7 @@ const path = localizedPath('/menu', lang);
                   style={`background-color: ${i % 2 === 1 ? 'color-mix(in srgb, var(--color-primary-dark) 14%, var(--color-surface-muted))' : 'var(--color-surface)'}; border: 1px solid var(--color-border); transition-delay: ${j * 70}ms`}
                   data-reveal
                   data-veg={item.vegetarian ? 'true' : 'false'}
+                  data-search={`${item.name} ${t(item.description, lang)}`}
                 >
                   {item.image && (
                     <div class="photo-frame shrink-0 rounded-lg overflow-hidden w-16 h-16 sm:w-20 sm:h-20">
@@ -224,6 +250,87 @@ const path = localizedPath('/menu', lang);
   .menu-back-to-top:hover {
     color: var(--color-accent);
   }
+
+  .menu-search-wrap {
+    position: relative;
+  }
+  .menu-search-icon {
+    position: absolute;
+    inset-inline-start: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+  .menu-search-input {
+    width: 100%;
+    padding-block: 0.6rem;
+    padding-inline-start: 2.5rem;
+    padding-inline-end: 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease;
+  }
+  .menu-search-input::placeholder {
+    color: var(--color-text-muted);
+  }
+  .menu-search-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+  .menu-jump-chip {
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    background-color: transparent;
+    white-space: nowrap;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .menu-jump-chip:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  /* Glovo-style horizontal scroll strip for the jump-chip row. */
+  .menu-jump-scroll {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    padding-block: 2px;
+    mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+  }
+  .menu-jump-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  [dir='rtl'] .menu-jump-scroll {
+    mask-image: linear-gradient(to left, transparent, black 20px, black calc(100% - 20px), transparent);
+    -webkit-mask-image: linear-gradient(to left, transparent, black 20px, black calc(100% - 20px), transparent);
+  }
+  @media (min-width: 640px) {
+    .menu-jump-scroll {
+      margin-inline: -2rem;
+      padding-inline: 2rem;
+    }
+  }
 </style>
 
 <script>
@@ -234,16 +341,31 @@ const path = localizedPath('/menu', lang);
   // via a View Transitions client-side navigation, not just a hard load.
   document.addEventListener('astro:page-load', () => {
     const filterButtons = document.querySelectorAll('.menu-filter-btn');
-    if (!filterButtons.length) return;
-
+    const searchInput = document.getElementById('menu-search');
+    const jumpChips = document.querySelectorAll('[data-jump]');
     const items = document.querySelectorAll('[data-veg]');
     const categories = document.querySelectorAll('[data-menu-category]');
 
-    function applyFilter(filter) {
+    if (!filterButtons.length && !searchInput) return;
+
+    let activeFilter = 'all';
+
+    // Accent-insensitive match ("epices" also finds "épices") — a visitor
+    // typing on a phone shouldn't need the right diacritics to find a dish.
+    function normalize(str) {
+      return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function applyFilters() {
+      const query = normalize(searchInput?.value.trim() ?? '');
       items.forEach((item) => {
         const isVeg = item.getAttribute('data-veg') === 'true';
-        const show = filter === 'all' || isVeg;
-        item.style.display = show ? '' : 'none';
+        const matchesFilter = activeFilter === 'all' || isVeg;
+        const matchesQuery = !query || normalize(item.getAttribute('data-search') ?? '').includes(query);
+        item.style.display = matchesFilter && matchesQuery ? '' : 'none';
       });
 
       categories.forEach((cat) => {
@@ -256,10 +378,24 @@ const path = localizedPath('/menu', lang);
       btn.addEventListener('click', () => {
         filterButtons.forEach((b) => b.classList.remove('is-active'));
         btn.classList.add('is-active');
-        applyFilter(btn.getAttribute('data-filter'));
+        activeFilter = btn.getAttribute('data-filter');
+        applyFilters();
       });
     });
 
-    applyFilter('all');
+    searchInput?.addEventListener('input', applyFilters);
+
+    // Intercept the jump chips so the scroll target respects scroll-mt
+    // (the sticky order bar's height) the same way as a plain #hash
+    // navigation would — smooth on top of that, not instead of it.
+    jumpChips.forEach((chip) => {
+      chip.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(chip.getAttribute('href'));
+        target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    applyFilters();
   });
 </script>
