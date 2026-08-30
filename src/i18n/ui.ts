@@ -7,7 +7,7 @@
 // genuinely repeat (nav, buttons) still have exactly one source of truth.
 import type { LocalizedText } from './languages';
 
-export const nav: Record<'accueil' | 'menu' | 'aPropos' | 'avis' | 'club' | 'faq' | 'contact', LocalizedText> = {
+export const nav: Record<'accueil' | 'menu' | 'aPropos' | 'avis' | 'club' | 'faq' | 'contact' | 'reservation', LocalizedText> = {
   accueil: { fr: 'Accueil', en: 'Home', ar: 'الرئيسية' },
   menu: { fr: 'Menu', en: 'Menu', ar: 'القائمة' },
   aPropos: { fr: 'À propos', en: 'About', ar: 'من نحن' },
@@ -15,10 +15,12 @@ export const nav: Record<'accueil' | 'menu' | 'aPropos' | 'avis' | 'club' | 'faq
   club: { fr: 'Le Club', en: 'The Club', ar: 'النادي' },
   faq: { fr: 'FAQ', en: 'FAQ', ar: 'الأسئلة الشائعة' },
   contact: { fr: 'Contact', en: 'Contact', ar: 'اتصل بنا' },
+  reservation: { fr: 'Réservation', en: 'Reservation', ar: 'الحجز' },
 };
 
 export const common = {
   commander: { fr: 'Commander', en: 'Order', ar: 'اطلب الآن' } satisfies LocalizedText,
+  reserverUneTable: { fr: 'Réserver une table', en: 'Book a table', ar: 'احجز طاولة' } satisfies LocalizedText,
   voirLeMenu: { fr: 'Voir le menu', en: 'View the menu', ar: 'شاهد القائمة' } satisfies LocalizedText,
   menuComplet: { fr: 'Menu complet', en: 'Full menu', ar: 'القائمة الكاملة' } satisfies LocalizedText,
   decouvrirLeMenu: { fr: 'Découvrir le menu', en: 'Discover the menu', ar: 'اكتشف القائمة' } satisfies LocalizedText,
@@ -33,6 +35,8 @@ export const common = {
   whatsapp: { fr: 'WhatsApp', en: 'WhatsApp', ar: 'واتساب' } satisfies LocalizedText,
   horaires: { fr: 'Horaires', en: 'Opening hours', ar: 'ساعات العمل' } satisfies LocalizedText,
   avisTripadvisorSuffix: { fr: 'avis Tripadvisor', en: 'Tripadvisor reviews', ar: 'تقييم على Tripadvisor' } satisfies LocalizedText,
+  instagramFollowersSuffix: { fr: 'abonnés Instagram', en: 'Instagram followers', ar: 'متابع على Instagram' } satisfies LocalizedText,
+  fusionBadge: { fr: 'Cuisine fusion', en: 'Fusion cuisine', ar: 'مطبخ فيوجن' } satisfies LocalizedText,
   avisGoogle: { fr: 'Avis Google', en: 'Google reviews', ar: 'تقييمات Google' } satisfies LocalizedText,
   laisserAvisGoogle: { fr: 'Laisser un avis sur Google', en: 'Leave a review on Google', ar: 'اترك تقييمًا على Google' } satisfies LocalizedText,
   voirSurGoogle: { fr: 'Voir sur Google', en: 'View on Google', ar: 'شاهد على Google' } satisfies LocalizedText,
