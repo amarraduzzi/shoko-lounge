@@ -206,35 +206,52 @@ const { googleRating, googleReviewsUrl } = siteConfig.social;
     </div>
   </section>
 
-  <!-- Form + info — now full-bleed with a dimmed ambiance photo and a soft
+  <!-- Form + info — now full-bleed with a warm, blurred backdrop and a soft
        glow behind it (see the file-top comment), instead of sitting on
-       flat --color-background like before. mood-cocktail.webp is the same
-       real client photo already used on Home's ambiance grid — reused
-       here rather than a new asset, and dimmed enough (opacity + heavy
-       gradient) that it reads as texture/mood, not a competing subject
-       next to the form. -->
+       flat --color-background like before. Reuses reservation-hero.webp
+       (already proven warm/rich — reds, ambers, gold) rather than a new
+       asset, but blurred into pure color/light texture (not a second
+       crisp copy of the same shot) so it reads as warm ambient glow
+       behind the form, not a competing subject.
+
+       FIX: the first pass used a different photo (mood-cocktail.webp) at
+       20% opacity under a near-opaque dark gradient (0.88–0.94) — on the
+       real live page (see the screenshot this was flagged from) that
+       combination made the photo essentially invisible, so the section
+       still read as flat
+       black, same as before the redesign. This version uses the hero
+       photo itself (proven warm/rich — reds, ambers, gold) blurred and
+       darkened via CSS filter instead of relying on opacity + a heavy
+       overlay to do the dimming; blur alone keeps the color and light
+       genuinely visible as texture while still being soft enough not to
+       compete with the form. scale-110 hides the blur's own soft edges
+       from showing at the section's boundary. -->
   <section class="relative overflow-hidden">
     <img
-      src="/images/mood-cocktail.webp"
+      src="/images/reservation-hero.webp"
       alt=""
       aria-hidden="true"
-      class="absolute inset-0 w-full h-full object-cover opacity-20"
+      class="absolute inset-0 w-full h-full object-cover scale-110"
+      style="filter: blur(48px) brightness(0.6) saturate(1.35)"
       loading="lazy"
     />
     <div
       class="absolute inset-0"
-      style="background: linear-gradient(180deg, var(--color-background) 0%, rgba(11,11,12,0.88) 18%, rgba(11,11,12,0.94) 100%)"
+      style="background: linear-gradient(180deg, var(--color-background) 0%, rgba(11,11,12,0.2) 16%, rgba(11,11,12,0.4) 100%)"
     ></div>
-    <div class="section-glow" style="width: 380px; height: 380px; background: var(--color-accent); opacity: 0.12; right: -140px; top: -100px;"></div>
+    <div class="section-glow" style="width: 420px; height: 420px; background: var(--color-accent); opacity: 0.18; right: -140px; top: -120px;"></div>
 
     <div class="relative max-w-7xl mx-auto px-5 sm:px-8 py-14 sm:py-20 grid sm:grid-cols-[1.4fr_1fr] gap-10 sm:gap-14 items-start">
       <!-- The form card — now a frosted-glass panel (blurred, translucent
            surface) with a real drop shadow instead of a flat opaque box,
            so it visibly "floats" on the ambiance photo behind it. Same
-           shadow weight as Home's #bombay-video card. -->
+           shadow weight as Home's #bombay-video card. Surface opacity
+           dropped from 88% to 74% (was reading as near-solid before,
+           which hid the point of a glass card once the background photo
+           behind it actually became visible). -->
       <div
         class="rsv-card rounded-2xl p-6 sm:p-9 max-w-2xl"
-        style="background-color: color-mix(in srgb, var(--color-surface) 88%, transparent); border: 1px solid var(--color-border); backdrop-filter: blur(14px); box-shadow: 0 24px 60px rgba(0,0,0,0.45)"
+        style="background-color: color-mix(in srgb, var(--color-surface) 74%, transparent); border: 1px solid var(--color-border); backdrop-filter: blur(18px); box-shadow: 0 24px 60px rgba(0,0,0,0.5)"
         data-reveal
       >
         <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style="color: var(--color-accent)">
@@ -243,6 +260,7 @@ const { googleRating, googleReviewsUrl } = siteConfig.social;
         <p class="font-display text-xl sm:text-2xl mb-7" style="color: var(--color-text-primary)">
           {t(copy.formLead, lang)}
         </p>
+
 
         <form id="reservation-form" novalidate>
           <div class="grid sm:grid-cols-2 gap-5">
