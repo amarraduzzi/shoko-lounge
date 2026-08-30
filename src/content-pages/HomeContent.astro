@@ -12,14 +12,13 @@ import Ornament from '../components/Ornament.astro';
 import { siteConfig } from '../config/site.config';
 import { getOrderCtaLabel } from '../lib/nav';
 import { menuHighlights } from '../content/menu-highlights';
-import { testimonials, aggregateRating } from '../content/testimonials';
+import { instagramProof } from '../content/social-proof';
 import { t, arrow, localizedPath, type Language } from '../i18n/languages';
 import { common, place } from '../i18n/ui';
 
 interface Props {
   lang?: Language;
 }
-
 const { lang = 'fr' } = Astro.props;
 
 const primaryKeyword = t(siteConfig.identity.primaryKeyword, lang);
@@ -30,77 +29,137 @@ const orderCtaLabel = getOrderCtaLabel(lang);
 // Page-specific copy — kept next to the markup that uses it rather than in
 // the shared src/i18n/ui.ts, since none of this repeats on other pages.
 const copy = {
+  // Keyword-first: the search term goes as far forward in the title as
+  // possible (Google + AI answer engines both weight this), brand name
+  // last as a trust signal. Was brand-first ("Indian Flavors — restaurant
+  // indien à Rabat") — reordered because almost nobody searches this
+  // restaurant by name yet; they search the service + city.
   metaTitle: {
-    fr: `${siteConfig.identity.name} — ${primaryKeyword} à ${city}`,
-    en: `${siteConfig.identity.name} — ${primaryKeyword} in ${city}`,
-    ar: `${siteConfig.identity.name} — ${primaryKeyword} في ${city}`,
+    fr: `${primaryKeyword} à ${city} — ${siteConfig.identity.name}`,
+    en: `${primaryKeyword} in ${city} — ${siteConfig.identity.name}`,
+    ar: `${primaryKeyword} في ${city} — ${siteConfig.identity.name}`,
   },
   metaDescription: {
-    fr: `${siteConfig.identity.name} est un ${primaryKeyword} authentique à ${city}. Currys onctueux, grillades au tandoor traditionnel et pains naan cuits minute, à commander en ligne ou sur place.`,
-    en: `${siteConfig.identity.name} is an authentic ${primaryKeyword} in ${city}. Velvety curries, traditional tandoor-grilled meats and naan baked to order, for delivery or pickup.`,
-    ar: `${siteConfig.identity.name} هو ${primaryKeyword} أصيل في ${city}. أطباق كاري ناعمة، مشاوٍ تندور تقليدية، وخبز نان طازج، للطلب أونلاين أو في المطعم.`,
+    fr: `${siteConfig.identity.name} est un ${primaryKeyword} à ${city}. Cuisine fusion contemporaine, cocktails signature et ambiance lounge, du dîner jusque tard dans la nuit.`,
+    en: `${siteConfig.identity.name} is a ${primaryKeyword} in ${city}. Contemporary fusion cuisine, signature cocktails and a lounge atmosphere, from dinner until late.`,
+    ar: `${siteConfig.identity.name} هو ${primaryKeyword} في ${city}. مطبخ فيوجن معاصر، كوكتيلات مميزة، وأجواء لاونج حتى وقت متأخر من الليل.`,
   },
+  // Brand-first, written as an actual headline rather than a raw keyword
+  // string — the metaTitle above stays keyword-first for search snippets,
+  // but the on-page H1 is what visitors actually read, so it needs to
+  // read like a sentence, not an SEO slug.
   heroTitle: {
-    fr: `${siteConfig.identity.name} — ${primaryKeyword} authentique à ${city}`,
-    en: `${siteConfig.identity.name} — authentic ${primaryKeyword} in ${city}`,
-    ar: `${siteConfig.identity.name} — ${primaryKeyword} أصيل في ${city}`,
+    fr: `${siteConfig.identity.name} — Restaurant Fusion & Cocktails à ${city}`,
+    en: `${siteConfig.identity.name} — Fusion Dining & Cocktails in ${city}`,
+    ar: `${siteConfig.identity.name} — فيوجن وكوكتيلات في ${city}`,
   },
   heroSubtitle: {
-    fr: 'Currys onctueux, grillades au tandoor traditionnel et pains naan cuits minute, au cœur de la ville.',
-    en: 'Velvety curries, traditional tandoor-grilled meats and naan baked to order, in the heart of the city.',
-    ar: 'أطباق كاري ناعمة، مشاوٍ تندور تقليدية، وخبز نان طازج، في قلب المدينة.',
+    fr: 'Un univers culinaire entre fusion contemporaine et inventive, dans une ambiance lounge feutrée au cœur de la ville.',
+    en: 'A culinary world between contemporary and inventive fusion, in a plush lounge atmosphere in the heart of the city.',
+    ar: 'عالم من النكهات بين الفيوجن المعاصر والإبداعي، في أجواء لاونج فاخرة في قلب المدينة.',
   },
   selectionKicker: { fr: 'Sélection', en: 'Selection', ar: 'مختارات' },
   incontournablesTitle: { fr: 'Nos incontournables', en: 'Customer favorites', ar: 'أطباقنا المميزة' },
   platSignatureKicker: { fr: 'Plat signature', en: 'Signature dish', ar: 'الطبق المميز' },
   platSignatureQuote: {
-    fr: "Un Hyderabadi Dum Biryani mijoté à l'étouffée, servi avec pani puri et naan tout juste sorti du tandoor.",
-    en: 'A Hyderabadi Dum Biryani slow-cooked to perfection, served with pani puri and naan straight from the tandoor.',
-    ar: 'برياني حيدر آبادي مطهو ببطء حتى الكمال، يُقدَّم مع باني بوري وخبز نان طازج من التندور.',
+    fr: 'Chaque assiette est pensée comme une rencontre entre les traditions culinaires et une créativité résolument contemporaine.',
+    en: 'Every plate is designed as a meeting point between culinary tradition and resolutely contemporary creativity.',
+    ar: 'كل طبق مصمم كنقطة التقاء بين التقاليد الطهوية والإبداع المعاصر.',
   },
-  galleryAlt1: {
-    fr: `Plats de ${siteConfig.identity.name}, ${primaryKeyword} à ${city}`,
-    en: `Dishes from ${siteConfig.identity.name}, ${primaryKeyword} in ${city}`,
-    ar: `أطباق من ${siteConfig.identity.name}, ${primaryKeyword} في ${city}`,
+  ambianceKicker: { fr: "L'ambiance", en: 'The ambiance', ar: 'الأجواء' },
+  ambianceTitle: {
+    fr: 'Un aperçu de l\'atmosphère',
+    en: 'A taste of the atmosphere',
+    ar: 'لمحة عن الأجواء',
   },
-  galleryAlt2: {
-    fr: 'Naan fait maison, cuit au tandoor',
-    en: 'House-made naan, baked in the tandoor',
-    ar: 'خبز نان محضّر منزليًا، مخبوز في التندور',
+  ambianceAlt1: {
+    fr: 'Danseuse en représentation dans l\'ambiance du lounge',
+    en: 'Dancer performing in the lounge\'s atmosphere',
+    ar: 'راقصة أثناء عرضها في أجواء اللاونج',
   },
-  galleryAlt3: {
-    fr: "Sélection d'entrées et de plats indiens",
-    en: 'A selection of Indian starters and dishes',
-    ar: 'تشكيلة من المقبلات والأطباق الهندية',
+  ambianceAlt2: {
+    fr: 'Cocktail signature servi dans une ambiance tamisée',
+    en: 'Signature cocktail served in a dimly lit setting',
+    ar: 'كوكتيل مميز يُقدَّم في أجواء خافتة',
+  },
+  ambianceAlt3: {
+    fr: 'Statue de Bouddha dans le patio végétalisé, éclairage rouge',
+    en: 'Buddha statue in the planted patio, red lighting',
+    ar: 'تمثال بوذا في الفناء المزروع بإضاءة حمراء',
+  },
+  ambianceAlt4: {
+    fr: 'Danseuse orientale en pleine performance',
+    en: 'Oriental dancer mid-performance',
+    ar: 'راقصة شرقية في خضم عرضها',
+  },
+  ambianceAlt5: {
+    fr: 'Suspensions de lanternes orientales au plafond du lounge',
+    en: 'Oriental lantern fixtures hanging from the lounge ceiling',
+    ar: 'فوانيس شرقية معلقة في سقف اللاونج',
+  },
+  ambianceAlt6: {
+    fr: 'Verre gravé Shoko tenu à la lueur des bougies',
+    en: 'Shoko-engraved glass held by candlelight',
+    ar: 'كأس منقوش عليه شوكو في ضوء الشموع',
+  },
+  bombayKicker: { fr: 'Tous les soirs', en: 'Every night', ar: 'كل ليلة' },
+  bombayTitle: { fr: 'Shoko Nights', en: 'Shoko Nights', ar: 'ليالي شوكو' },
+  bombayDescription: {
+    fr: `Chaque soir, ${siteConfig.identity.name} s'anime : DJ set et entertainment, pour une expérience différente à chaque visite.`,
+    en: `Every night, ${siteConfig.identity.name} comes alive: DJ set and entertainment, for a different experience on every visit.`,
+    ar: `كل ليلة، يتحول ${siteConfig.identity.name}: دي جي وترفيه، لتجربة مختلفة في كل زيارة.`,
+  },
+  bombayDetail1: { fr: 'DJ set & musique live', en: 'DJ set & live music', ar: 'دي جي وموسيقى حية' },
+  bombayDetail2: { fr: 'Cocktails signature', en: 'Signature cocktails', ar: 'كوكتيلات مميزة' },
+  bombayDetail3: { fr: 'Show & entertainment', en: 'Show & entertainment', ar: 'عرض وترفيه' },
+  bombayCta: { fr: 'Voir plus de vidéos', en: 'See more videos', ar: 'شاهد المزيد من الفيديوهات' },
+  bombayVideoAlt: {
+    fr: `Ambiance d'une soirée Shoko Nights chez ${siteConfig.identity.name}`,
+    en: `Shoko Nights evening at ${siteConfig.identity.name}`,
+    ar: `أجواء أمسية ليالي شوكو في ${siteConfig.identity.name}`,
   },
   whyUs: [
     {
-      title: { fr: 'Recettes authentiques', en: 'Authentic recipes', ar: 'وصفات أصيلة' },
+      title: { fr: 'Fusion contemporaine', en: 'Contemporary fusion', ar: 'فيوجن معاصر' },
       body: {
-        fr: 'Épices importées, recettes transmises depuis trois générations, sans compromis sur le goût.',
-        en: 'Imported spices, recipes passed down for three generations, no compromise on flavor.',
-        ar: 'بهارات مستوردة، ووصفات متوارثة منذ ثلاثة أجيال، دون أي تنازل عن النكهة.',
+        fr: 'Une cuisine qui réinvente la tradition avec une touche moderne, pensée pour surprendre à chaque service.',
+        en: 'A kitchen that reimagines tradition with a modern twist, designed to surprise at every service.',
+        ar: 'مطبخ يعيد ابتكار التقاليد بلمسة عصرية، مصمم لإدهاشك في كل خدمة.',
       },
     },
     {
-      title: { fr: 'Tandoor traditionnel', en: 'Traditional tandoor', ar: 'تندور تقليدي' },
+      title: { fr: 'Ambiance lounge', en: 'Lounge atmosphere', ar: 'أجواء لاونج' },
       body: {
-        fr: "Cuisson au four d'argile pour nos grillades et nos pains naan, cuits minute à la commande.",
-        en: 'Clay-oven cooking for our grilled meats and naan, made fresh to order.',
-        ar: 'طهي في فرن طيني لمشاوينا وخبز النان، يُحضّر طازجًا عند الطلب.',
+        fr: 'Un décor doré et feutré, pensé pour les dîners entre amis comme pour les soirées événementielles.',
+        en: 'A plush, gold-toned decor, designed for dinners with friends as much as for event nights.',
+        ar: 'ديكور ذهبي وفاخر، مصمم لعشاء الأصدقاء وكذلك لأمسيات الفعاليات.',
       },
     },
     {
-      title: { fr: 'Livraison rapide', en: 'Fast delivery', ar: 'توصيل سريع' },
+      title: { fr: 'Ouvert tard', en: 'Open late', ar: 'مفتوح حتى وقت متأخر' },
       body: {
-        fr: `Commande directement reliée à notre cuisine à ${city} — préparation immédiate.`,
-        en: `Orders go straight to our kitchen in ${city} — prepared right away.`,
-        ar: `الطلبات تصل مباشرة إلى مطبخنا في ${city} — تُحضَّر فورًا.`,
+        fr: `Ouvert tous les jours jusqu'à 2h du matin à ${city} — pour le dîner comme pour la fin de soirée.`,
+        en: `Open every day until 2am in ${city} — for dinner as much as for a late-night out.`,
+        ar: `مفتوح يوميًا حتى الساعة 2 صباحًا في ${city} — للعشاء وكذلك لسهرة متأخرة.`,
       },
     },
   ],
   reviewAriaLabel: { fr: 'Avis', en: 'Review', ar: 'تقييم' },
 } satisfies Record<string, { fr: string; en: string; ar: string } | { title: any; body: any }[]>;
+
+// Instagram grid — real posts from the client's account, picked for
+// variety (guest experience, food, ambiance, drinks) rather than six
+// similar shots. The first three are fresh uploads; the other three reuse
+// existing site photography that wasn't already shown in the ambiance grid
+// above, so this section doesn't just repeat it.
+const instagramPosts = [
+  { src: '/images/instagram-1.webp', alt: { fr: 'Une cliente filme l\'ambiance en soirée', en: 'A guest filming the evening atmosphere', ar: 'زبونة تصور أجواء السهرة' } },
+  { src: '/images/instagram-2.webp', alt: { fr: 'Roll signature garni de tobiko', en: 'Signature roll topped with tobiko', ar: 'رول مميز مزين بالتوبيكو' } },
+  { src: '/images/instagram-3.webp', alt: { fr: 'Table dressée à la lueur des bougies', en: 'Table set by candlelight', ar: 'طاولة مُعدة في ضوء الشموع' } },
+  { src: '/images/cocktail-red-velvet.webp', alt: { fr: 'Cocktail signature Red Velvet', en: 'Signature Red Velvet cocktail', ar: 'كوكتيل ريد فيلفيت المميز' } },
+  { src: '/images/interior-1.webp', alt: { fr: 'Moment mode dans l\'ambiance du lounge', en: 'A fashion moment in the lounge\'s atmosphere', ar: 'لحظة أناقة في أجواء اللاونج' } },
+  { src: '/images/dish-rock-shrimps.webp', alt: { fr: 'Rock shrimps servis à table', en: 'Rock shrimp served table-side', ar: 'روك شريمبس تُقدَّم على الطاولة' } },
+] satisfies { src: string; alt: { fr: string; en: string; ar: string } }[];
 
 // Restaurant + LocalBusiness structured data — the single most important
 // JSON-LD block on the whole site, since Home is what Google/AI engines
@@ -123,21 +182,22 @@ const restaurantJsonLd = {
     addressLocality: siteConfig.identity.city,
     addressCountry: siteConfig.identity.country,
   },
-  servesCuisine: 'Indian',
+  servesCuisine: 'Fusion',
   priceRange: '€€',
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: aggregateRating.ratingValue,
-    reviewCount: aggregateRating.reviewCount,
-  },
 };
 
-const highlightItems = menuHighlights.flatMap((c) => c.items).slice(0, 4);
-const ratingRounded = Math.round(Number(aggregateRating.ratingValue));
-const ratingStars = '★'.repeat(ratingRounded) + '☆'.repeat(5 - ratingRounded);
+// Curated, not "first 4 in file order": these four are hand-picked because
+// they each have real dish photography (see menu-highlights.ts) spanning
+// both starters and mains, so the homepage teaser is a proper visual mix
+// instead of e.g. four starters in a row. A plain .slice(0, 4) would have
+// silently pulled in items with no photo at all.
+const highlightNames = ['Tartare de thon', 'Saumon mariné à la truffe', 'Saumon snacké au Teriyaki', 'Filet de bœuf'];
+const highlightItems = highlightNames
+  .map((name) => menuHighlights.flatMap((c) => c.items).find((item) => item.name === name))
+  .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
 const path = localizedPath('/', lang);
 ---
-
 <Layout
   title={t(copy.metaTitle, lang)}
   description={t(copy.metaDescription, lang)}
@@ -148,14 +208,19 @@ const path = localizedPath('/', lang);
 >
   <!-- Hero — two different crops/photos, not one image stretched or
        cropped by CSS. Desktop's negative space is on the LEFT (title
-       sits beside the food). Mobile (v3) is a moody, naturally dark shot —
-       blurred chef + bokeh kitchen lights up top, the sharp curry/naan
-       only in the bottom quarter — so the top ~70% is already dark enough
-       for the title on its own; the gradient below is just a light assist
-       for contrast and to blend into the header, not the thing doing the
-       work (v1 leaned on a flat black band, v2 was a full-frame steam shot
-       with almost no natural dark zone; this one has real photographic
-       depth instead of either).
+       sits beside the food). Mobile (v4) is the chef facing camera at his
+       table — only the very top strip (~11% of the frame, above the
+       pendant lights) is naturally dark; the rest of the shot is lit and
+       detailed (brick wall, lights, face, the dish), so this needed the
+       LIGHTEST gradient assist of any version so far, just enough to seat
+       the title against the header.
+
+       This source photo also had a fabricated restaurant logo embroidered
+       on the chef's jacket ("Saffron ... Fusion Cuisine") — not Indian
+       Flavors. Before resizing for the site, that patch of fabric was
+       cloned over and the real logo-mark.webp was screen-blended on in
+       its place, so what ships is the client's actual mark, not a
+       fictional brand.
 
        object-top on the mobile image still matters: real phone browsers
        (address bar + tab strip + gesture bar eating into the viewport)
@@ -165,61 +230,94 @@ const path = localizedPath('/', lang);
        and out of frame. Pinning to the top keeps the framing stable
        regardless of viewport height; any extra cropping comes off the
        bottom (the dish) instead. -->
-  <section class="relative min-h-[500px] sm:h-[92vh] flex items-start sm:items-center overflow-hidden">
+
+  <!-- Fixed to exactly one screen on mobile (100svh — the SMALL viewport
+       height unit, i.e. the viewport with the browser's address/tab bars
+       at their most expanded) so the next section never peeks in on
+       first load, on any phone. This has to be a scoped <style> media
+       query rather than a Tailwind class: an inline style attribute would
+       out-specificity the sm:h-[92vh] class and break the desktop height,
+       and 100vh/100svh need to be two separate declarations (the second
+       silently no-ops on browsers that don't support svh yet, instead of
+       the whole rule being dropped as invalid).
+
+       items-center (not items-start) on purpose: pinning content to the
+       top left zero margin at the BOTTOM, and the site-wide floating
+       WhatsApp button (WhatsAppButton.astro) is `position: fixed; bottom:
+       20px; right: 18px` — a fixed element that doesn't know or care
+       where this section's content ends. Centering gives equal breathing
+       room top and bottom automatically, so content lands nowhere near
+       that button regardless of how a real device's text wraps; the
+       pb-24 below adds an extra explicit margin on top of that as a
+       second line of defense, since the button is real screen furniture,
+       not just "whatever's below the fold". -->
+  <section id="home-hero" class="relative sm:h-[92vh] flex items-center overflow-hidden">
     <img src="/images/hero-home-mobile.webp" alt={t(copy.metaDescription, lang)} class="sm:hidden absolute inset-0 w-full h-full object-cover object-top" />
     <img src="/images/hero-home.webp" alt={t(copy.metaDescription, lang)} class="hidden sm:block absolute inset-0 w-full h-full object-cover" />
-
     <!-- Mobile overlay: light assist only — the photo itself is already
          dark up top, this just adds a bit more contrast near the header
          and tapers away well before the dish. -->
-    <div class="sm:hidden absolute inset-0" style="background: linear-gradient(180deg, rgba(11,11,12,0.5) 0%, rgba(11,11,12,0.35) 20%, rgba(11,11,12,0.15) 40%, transparent 58%)"></div>
-
+    <div class="sm:hidden absolute inset-0" style="background: linear-gradient(180deg, rgba(11,11,12,0.4) 0%, rgba(11,11,12,0.24) 16%, rgba(11,11,12,0.08) 30%, transparent 44%)"></div>
     <!-- Desktop overlay: same diagonal dark-corner treatment as the
          "signature spotlight" band further down this page (see the
          gallery-biryani section) — reused here instead of a new gradient
          shape, mostly reinforcing the photo's own dark left side. -->
     <div class="hidden sm:block absolute inset-0" style="background: linear-gradient(100deg, var(--color-background) 0%, rgba(11,11,12,0.6) 28%, rgba(11,11,12,0.2) 50%, transparent 72%)"></div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-20 sm:pt-0 pb-10 sm:pb-0 w-full">
+    <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-14 sm:pt-0 pb-24 sm:pb-0 w-full">
       <div class="max-w-xl">
-        <span class="inline-block text-xs font-bold uppercase tracking-[0.3em] mb-4" style="color: var(--color-accent)">
+        <!-- text-shadow on mobile only: the fix that actually stops this
+             hero from needing a new gradient tweak every time the photo
+             changes. Contrast used to depend on exactly which pixels of
+             the photo happen to sit behind each line at each device's
+             real (chrome-shrunk) viewport height — fragile, as the last
+             few rounds proved. A shadow keeps every line readable against
+             ANY part of the photo, so swapping photos again won't
+             reopen this. Removed on desktop, where the photo's own dark
+             left side already does the job cleanly. -->
+        <span class="inline-block text-xs font-bold uppercase tracking-[0.3em] mb-3 [text-shadow:0_2px_10px_rgba(0,0,0,0.85)] sm:[text-shadow:none]" style="color: var(--color-accent)">
           {city} · {country}
         </span>
-        <h1 class="font-display text-[2.4rem] leading-[1.05] sm:text-5xl lg:text-6xl font-semibold tracking-tight" style="color: var(--color-text-primary)">
+        <h1 class="font-display text-[1.85rem] leading-[1.15] sm:text-5xl lg:text-6xl font-semibold tracking-tight [text-shadow:0_2px_14px_rgba(0,0,0,0.85)] sm:[text-shadow:none]" style="color: var(--color-text-primary)">
           {t(copy.heroTitle, lang)}
         </h1>
-        <p class="mt-5 text-base sm:text-lg max-w-md" style="color: var(--color-text-muted)">
+        <p class="mt-3 text-sm sm:text-lg max-w-md [text-shadow:0_1px_8px_rgba(0,0,0,0.9)] sm:[text-shadow:none]" style="color: var(--color-text-muted)">
           {t(copy.heroSubtitle, lang)}
         </p>
-        <!-- Mobile-only dark backdrop behind the button row: the outline
-             "Voir le menu" button (transparent bg, gold border/text) has
-             no reliable dark ground to sit on here — the mobile hero shot
-             is lighter lower down than the overlay gradient above assumes.
-             This backdrop guarantees contrast regardless of crop, and
-             switches off above the sm: breakpoint where the desktop photo
-             already provides enough dark space. -->
-        <div class="mt-8 flex flex-wrap gap-3 -mx-2 p-2 rounded-xl sm:mx-0 sm:p-0 sm:rounded-none" style="background: rgba(11,11,12,0.35)">
-          <Button href={orderCtaLabel.href} external variant="cta">{orderCtaLabel.label}</Button>
-          <Button href={localizedPath('/menu', lang)} variant="outline">{t(common.voirLeMenu, lang)}</Button>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <Button href={orderCtaLabel.href} variant="cta">{orderCtaLabel.label}</Button>
+          <Button href={localizedPath('/menu', lang)} variant="outline">{t(common.voirLeMenuComplet, lang)}</Button>
         </div>
-        <p class="mt-5 flex items-center gap-2 text-sm" style="color: var(--color-text-muted)">
-          <span style="color: var(--color-accent); letter-spacing: 1px">{ratingStars}</span>
-          {aggregateRating.ratingValue}/5 · {aggregateRating.reviewCount} {t(common.avisTripadvisorSuffix, lang)}
+        <p class="mt-4 flex items-center gap-2 text-sm [text-shadow:0_1px_8px_rgba(0,0,0,0.9)] sm:[text-shadow:none]" style="color: var(--color-text-muted)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-accent); filter: drop-shadow(0 1px 8px rgba(0,0,0,0.9))">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4" />
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+          </svg>
+          <a href={instagramProof.url} target="_blank" rel="noreferrer" class="hover:underline">
+            {instagramProof.followers} {t(common.instagramFollowersSuffix, lang)}
+          </a>
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Menu highlights -->
-  <section class="max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
-    <div class="flex items-baseline justify-between mb-8 pb-3" style="border-bottom: 1px solid var(--color-border)">
+  <!-- Menu highlights — was a plain grid of text-only cards (no photos on
+       any of the 4 items, just a droplet placeholder icon) while every
+       other section on this page leans on real photography. Now portrait
+       dish shots with the price as a pill on the photo itself (menu-card
+       convention) instead of buried in the text block below, plus a soft
+       background glow to match the section rhythm elsewhere on this page. -->
+  <section class="relative max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-24 overflow-hidden">
+    <div class="section-glow" style="width: 340px; height: 340px; background: var(--color-accent); opacity: 0.1; left: -120px; top: -60px;"></div>
+    <div class="relative flex items-baseline justify-between mb-10 pb-3" style="border-bottom: 1px solid var(--color-border)">
       <div>
         <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style="color: var(--color-accent)">{t(copy.selectionKicker, lang)}</span>
-        <h2 class="font-display text-2xl sm:text-3xl font-semibold" style="color: var(--color-text-primary)">{t(copy.incontournablesTitle, lang)}</h2>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold" style="color: var(--color-text-primary)">{t(copy.incontournablesTitle, lang)}</h2>
       </div>
-      <a href={localizedPath('/menu', lang)} class="text-sm font-bold" style="color: var(--color-accent)">{t(common.menuComplet, lang)} {arrow(lang)}</a>
+      <a href={localizedPath('/menu', lang)} class="text-sm font-bold shrink-0" style="color: var(--color-accent)">{t(common.menuComplet, lang)} {arrow(lang)}</a>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {highlightItems.map((item, i) => (
         <div
           class="card-lift rounded-2xl overflow-hidden"
@@ -227,8 +325,15 @@ const path = localizedPath('/', lang);
           data-reveal
         >
           {item.image ? (
-            <div class="photo-frame aspect-square">
+            <div class="photo-frame relative aspect-[4/5]">
               <img src={item.image} alt={item.imageAlt ? t(item.imageAlt, lang) : item.name} class="w-full h-full object-cover" loading="lazy" />
+              <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, transparent 55%, rgba(11,11,12,0.75) 100%)"></div>
+              <span
+                class="absolute top-3 px-2.5 py-1 rounded-full text-xs font-bold"
+                style="inset-inline-end: 0.75rem; background-color: rgba(11,11,12,0.55); backdrop-filter: blur(4px); color: var(--color-accent); border: 1px solid rgba(212,175,110,0.35)"
+              >
+                {item.priceMAD} MAD
+              </span>
             </div>
           ) : (
             <div class="pt-5 px-5">
@@ -240,12 +345,85 @@ const path = localizedPath('/', lang);
           <div class="p-5">
             <h3 class="menu-item-name font-display font-semibold text-lg" style="color: var(--color-text-primary)">{item.name}</h3>
             <p class="text-sm mt-1.5 leading-relaxed" style="color: var(--color-text-muted)">{t(item.description, lang)}</p>
-            <p class="menu-item-price mt-3 font-bold" style="color: var(--color-accent)">{item.priceMAD} MAD</p>
+            {!item.image && (
+              <p class="menu-item-price mt-3 font-bold" style="color: var(--color-accent)">{item.priceMAD} MAD</p>
+            )}
           </div>
         </div>
       ))}
     </div>
   </section>
+
+  <!-- Shoko Nights — the themed-night section (DJ set, lounge atmosphere,
+       non-alcoholic cocktails, entertainment). The client supplied an
+       already-edited vertical promo reel (captions + end-card baked in by
+       them) rather than raw footage, so this embeds it as-is instead of
+       re-cutting it — a phone-shaped frame keeps a portrait 9:16 clip from
+       just floating oddly in a landscape page layout. Re-encoded to H.264
+       for playback outside Safari (the source was HEVC, which Chrome/
+       Firefox don't decode) and downscaled to 720p — plenty for a
+       contained player, a fraction of the original's file size. Autoplay
+       starts muted+loop (required — browsers block audio-on autoplay
+       outright), then the astro:page-load script below unmutes it once the
+       card is actually scrolled into view and mutes it again on the way
+       out, so the lounge music only plays while a visitor is looking at it,
+       not the instant the page loads. Native controls stay on as a manual
+       fallback (some browsers still block the scripted unmute). -->
+  <!-- .section-tint, not .section-tint-warm — the testimonial carousel
+       right after this is already warm-tinted, and two warm sections back
+       to back is exactly the flat, undifferentiated rhythm the Club page
+       redesign moved away from. Neutral tint here keeps the plain → tint →
+       warm alternation the rest of the page already establishes. -->
+  <div class="section-tint">
+    <section class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+      <div class="grid sm:grid-cols-[minmax(0,280px)_1fr] gap-10 sm:gap-14 items-center">
+        <div class="mx-auto sm:mx-0 w-full max-w-[280px]" data-reveal="scale">
+          <div
+            class="relative rounded-[2rem] p-2"
+            style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 24px 60px rgba(0,0,0,0.45)"
+          >
+            <video
+              id="bombay-video"
+              class="w-full aspect-[9/16] rounded-[1.5rem] object-cover"
+              poster="/images/shoko-nights-poster.webp"
+              autoplay
+              muted
+              loop
+              playsinline
+              controls
+              preload="metadata"
+              aria-label={t(copy.bombayVideoAlt, lang)}
+            >
+              <source src="/videos/shoko-nights.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+
+        <div data-reveal style="transition-delay: 100ms">
+          <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style="color: var(--color-accent)">
+            {t(copy.bombayKicker, lang)}
+          </span>
+          <h2 class="font-display text-3xl sm:text-4xl font-semibold mb-4" style="color: var(--color-text-primary)">
+            {t(copy.bombayTitle, lang)}
+          </h2>
+          <p class="text-sm sm:text-base leading-relaxed mb-6" style="color: var(--color-text-muted)">
+            {t(copy.bombayDescription, lang)}
+          </p>
+          <ul class="flex flex-wrap gap-x-6 gap-y-3 mb-8">
+            {[copy.bombayDetail1, copy.bombayDetail2, copy.bombayDetail3].map((detail) => (
+              <li class="flex items-center gap-2 text-sm font-semibold" style="color: var(--color-text-primary)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                  <path d="M5 12.5l4.5 4.5L19 7" />
+                </svg>
+                {t(detail, lang)}
+              </li>
+            ))}
+          </ul>
+          <Button href={`${localizedPath('/a-propos', lang)}#video-gallery`} variant="cta">{t(copy.bombayCta, lang)}</Button>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <Ornament />
 
@@ -259,37 +437,81 @@ const path = localizedPath('/', lang);
         loading="lazy"
       />
     </div>
-    <div class="absolute inset-0" style="background: linear-gradient(100deg, color-mix(in srgb, var(--color-primary-dark) 30%, var(--color-background)) 0%, color-mix(in srgb, var(--color-primary-dark) 16%, rgba(11,11,12,0.55)) 42%, rgba(11,11,12,0.15) 68%, transparent 100%)"></div>
+    <!-- Gold gradient wash removed — client called it out as a "haze"
+         clouding an otherwise clean photo. Legibility for the text on the
+         left is now handled by text-shadow instead of a scrim over the
+         whole photo (see the hero section further up for the same
+         approach), so the image itself stays untouched. -->
     <div class="relative z-10 h-full flex items-center max-w-7xl mx-auto px-5 sm:px-8">
       <div class="max-w-md">
-        <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-4" style="color: var(--color-accent)">{t(copy.platSignatureKicker, lang)}</span>
-        <p class="pull-quote">
+        <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-4 [text-shadow:0_2px_10px_rgba(0,0,0,0.85)]" style="color: var(--color-accent)">{t(copy.platSignatureKicker, lang)}</span>
+        <p class="pull-quote [text-shadow:0_2px_14px_rgba(0,0,0,0.85)]">
           {t(copy.platSignatureQuote, lang)}
         </p>
-        <a href={localizedPath('/menu', lang)} class="inline-block mt-6 text-sm font-bold" style="color: var(--color-accent)">{t(common.voirLeMenuComplet, lang)} {arrow(lang)}</a>
+        <a href={localizedPath('/menu', lang)} class="inline-block mt-6 text-sm font-bold [text-shadow:0_1px_8px_rgba(0,0,0,0.9)]" style="color: var(--color-accent)">{t(common.voirLeMenuComplet, lang)} {arrow(lang)}</a>
       </div>
     </div>
   </section>
 
-  <!-- Photo gallery -->
+  <!-- Ambiance mood board — mood/reference imagery. Used to sit right below
+       a small, unheaded 2-photo gallery (the real reservation-hero + naan
+       shots); that made for two photo grids back to back with nothing to
+       break up the rhythm, and those two photos already appear elsewhere
+       on the site (reservation hero, menu naan category) so the standalone
+       block added little. Removed that block and kept this one — it has
+       its own kicker/heading and a fuller set of images, so it carries the
+       "gallery" role on its own now.
+       All six slots now hold real photos from the client's Instagram (Aug
+       2026 batches): dancer performance, cocktail toast, Buddha statue in
+       the patio, belly dancer, ceiling lanterns, and a Shoko-branded glass
+       by candlelight. -->
   <div class="section-tint">
     <section class="max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+      <div class="max-w-2xl mb-10 sm:mb-12" data-reveal>
+        <p class="font-bold text-sm tracking-widest uppercase" style="color: var(--color-accent)">{t(copy.ambianceKicker, lang)}</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold mt-2">{t(copy.ambianceTitle, lang)}</h2>
+      </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-        <div class="photo-frame rounded-2xl col-span-2 sm:col-span-1 aspect-square" data-reveal="scale">
-          <img src="/images/gallery-curries.webp" alt={t(copy.galleryAlt1, lang)} class="w-full h-full object-cover" loading="lazy" />
+        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale">
+          <img src="/images/mood-tile.webp" alt={t(copy.ambianceAlt1, lang)} class="w-full h-full object-cover" loading="lazy" />
         </div>
-        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 100ms">
-          <img src="/images/gallery-naan.webp" alt={t(copy.galleryAlt2, lang)} class="w-full h-full object-cover" loading="lazy" />
+        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 60ms">
+          <img src="/images/mood-cocktail.webp" alt={t(copy.ambianceAlt2, lang)} class="w-full h-full object-cover" loading="lazy" />
         </div>
-        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 200ms">
-          <img src="/images/gallery-spread.webp" alt={t(copy.galleryAlt3, lang)} class="w-full h-full object-cover" loading="lazy" />
+        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 120ms">
+          <img src="/images/mood-biryani.webp" alt={t(copy.ambianceAlt3, lang)} class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 180ms">
+          <img src="/images/mood-chai.webp" alt={t(copy.ambianceAlt4, lang)} class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 240ms">
+          <img src="/images/mood-lantern.webp" alt={t(copy.ambianceAlt5, lang)} class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="photo-frame rounded-2xl aspect-square" data-reveal="scale" style="transition-delay: 300ms">
+          <img src="/images/mood-naan.webp" alt={t(copy.ambianceAlt6, lang)} class="w-full h-full object-cover" loading="lazy" />
         </div>
       </div>
     </section>
   </div>
 
   <!-- Why us / E-E-A-T signals -->
-  <section class="max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-24 grid sm:grid-cols-3 gap-8">
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+    <!-- Halal badge — sits as its own trust strip above the 3-column grid
+         rather than as a 4th grid tile: the other three are full title +
+         paragraph value props, and a one-line badge squeezed into that
+         format (or left alone on an orphaned 4th row) would look like a
+         mistake, not a claim. -->
+    <span
+      class="inline-flex items-center gap-1.5 mb-8 px-3 py-1.5 rounded-full text-xs font-bold"
+      style="border: 1px solid var(--color-border); color: var(--color-accent); background-color: color-mix(in srgb, var(--color-accent) 12%, transparent)"
+      data-reveal
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+        <path d="M5 12.5l4.5 4.5L19 7" />
+      </svg>
+      {t(common.fusionBadge, lang)}
+    </span>
+    <div class="grid sm:grid-cols-3 gap-8">
     {copy.whyUs.map((f, i) => (
       <div data-reveal style={`transition-delay: ${i * 100}ms`}>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.5" class="mb-4" style="color: var(--color-accent)">
@@ -298,8 +520,8 @@ const path = localizedPath('/', lang);
               i === 0
                 ? 'M12 2c-1 3-4 4-4 8a4 4 0 008 0c0-4-3-5-4-8zM6 20h12'
                 : i === 1
-                ? 'M5 21V9a7 7 0 0114 0v12M5 21h14M9 21v-6h6v6'
-                : 'M3 7h11v8H3zM14 10h4l3 3v2h-7zM6 19a2 2 0 100-4 2 2 0 000 4zM17 19a2 2 0 100-4 2 2 0 000 4z'
+                  ? 'M5 21V9a7 7 0 0114 0v12M5 21h14M9 21v-6h6v6'
+                  : 'M3 7h11v8H3zM14 10h4l3 3v2h-7zM6 19a2 2 0 100-4 2 2 0 000 4zM17 19a2 2 0 100-4 2 2 0 000 4z'
             }
             stroke="currentColor"
             stroke-linecap="round"
@@ -310,89 +532,109 @@ const path = localizedPath('/', lang);
         <p class="text-sm leading-relaxed" style="color: var(--color-text-muted)">{t(f.body, lang)}</p>
       </div>
     ))}
-  </section>
-
-  <!-- Testimonial carousel -->
-  <section class="section-tint-warm relative max-w-none px-0 py-16 sm:py-28 overflow-hidden" data-reveal>
-    <div class="section-glow" style="width: 380px; height: 380px; background: var(--color-accent); opacity: 0.14; right: -140px; bottom: -60px;"></div>
-    <div class="relative testimonial-carousel max-w-3xl mx-auto px-5 sm:px-8">
-      <div class="testimonial-track">
-        {testimonials.map((tItem, i) => (
-          <div class="testimonial-slide text-center" data-slide={i}>
-            <span
-              class="inline-flex items-center justify-center w-12 h-12 rounded-full font-display font-bold text-lg mb-5"
-              style="background: var(--color-surface); border: 1.5px solid var(--color-accent); color: var(--color-accent)"
-            >
-              {tItem.name.charAt(0)}
-            </span>
-            <p class="pull-quote">{t(tItem.text, lang)}</p>
-            <p class="mt-6 text-sm font-bold" style="color: var(--color-accent)">— {tItem.name}</p>
-          </div>
-        ))}
-      </div>
-      <div class="testimonial-dots flex items-center justify-center gap-2 mt-8">
-        {testimonials.map((_, i) => (
-          <button
-            type="button"
-            class="testimonial-dot w-2 h-2 rounded-full transition-all"
-            style="background-color: var(--color-border)"
-            data-dot={i}
-            aria-label={`${t(copy.reviewAriaLabel, lang)} ${i + 1}`}
-          ></button>
-        ))}
-      </div>
-      <p class="text-center mt-4">
-        <a href={localizedPath('/avis', lang)} class="text-sm font-bold" style="color: var(--color-accent)">{t(common.lireTousLesAvis, lang)} {arrow(lang)}</a>
-      </p>
     </div>
   </section>
 
-  <style>
-    .testimonial-track { position: relative; min-height: 220px; }
-    .testimonial-slide {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      pointer-events: none;
-    }
-    .testimonial-slide.is-active {
-      position: relative;
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .testimonial-dot.is-active { background-color: var(--color-accent) !important; width: 22px; }
-  </style>
+  <!-- Instagram spotlight — replaces this template's testimonial carousel.
+       Shoko Lounge's real Tripadvisor rating is 3.3/5 on 15 reviews with
+       some serious negative reviews mixed in with genuinely glowing ones
+       (see content/social-proof.ts); the client chose to lean on
+       Instagram's real, verifiable follower count as social proof instead
+       of a review section, rather than risk a curated-positive selection
+       reading as spin next to a middling average.
+       The photo grid below was added on top of the original stat-only
+       version: a bare "74K" felt like an unsupported claim with nothing to
+       back it up, so six real posts now sit right above it — a guest
+       filming, food, a table setting, a cocktail, a fashion moment and a
+       branded dish — so the number reads as proof, not a guess. Every
+       tile links out to the profile like the button already did. -->
+  <section class="section-tint-warm relative max-w-none px-0 py-16 sm:py-24 overflow-hidden" data-reveal>
+    <div class="section-glow" style="width: 380px; height: 380px; background: var(--color-accent); opacity: 0.14; right: -140px; bottom: -60px;"></div>
+    <div class="relative max-w-4xl mx-auto px-5 sm:px-8 text-center">
+      <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style="color: var(--color-accent)">
+        {lang === 'en' ? 'On Instagram' : lang === 'ar' ? 'على إنستغرام' : 'Sur Instagram'}
+      </span>
+      <p class="font-display text-4xl sm:text-5xl font-semibold mb-8" style="color: var(--color-text-primary)">
+        {instagramProof.followers}
+      </p>
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-8">
+        {instagramPosts.map((post, i) => (
+          <a
+            href={instagramProof.url}
+            target="_blank"
+            rel="noreferrer"
+            class="instagram-tile group relative block rounded-xl overflow-hidden aspect-square"
+            style={`transition-delay: ${i * 60}ms`}
+            data-reveal="scale"
+            aria-label={`@${instagramProof.handle}`}
+          >
+            <img src={post.src} alt={t(post.alt, lang)} class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+            <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style="background-color: rgba(11,11,12,0.45)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="#fff" stroke="none" />
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+      <p class="text-sm sm:text-base mb-6" style="color: var(--color-text-muted)">
+        {t(common.instagramFollowersSuffix, lang)}
+      </p>
+      <Button href={instagramProof.url} variant="outline">
+        @{instagramProof.handle} {arrow(lang)}
+      </Button>
+    </div>
+  </section>
 
   <script>
-    document.querySelectorAll<HTMLElement>('.testimonial-carousel').forEach((carousel) => {
-      const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.testimonial-slide'));
-      const dots = Array.from(carousel.querySelectorAll<HTMLElement>('.testimonial-dot'));
-      let active = 0;
-      let timer: ReturnType<typeof setInterval>;
+    // Wrapped in 'astro:page-load' like every other script on this site
+    // (see Layout.astro/Header.astro's comments) — Layout.astro enables
+    // View Transitions sitewide, so a plain module script here only ever
+    // ran on a hard page refresh, never on a client-side navigation TO the
+    // home page (the normal way a visitor arrives via the nav bar). That
+    // left every slide stuck at its default opacity:0/absolute state and
+    // every dot un-highlighted — exactly the "empty" carousel this fixes.
+    // The `data-wired` guard mirrors ReservationContent.astro's form guard
+    // so repeated soft-navigations to Home don't stack up duplicate
+    // setInterval timers on the same carousel.
+    document.addEventListener('astro:page-load', () => {
+      // Shoko Nights video: unmute once it's actually in view, mute again
+      // once it scrolls back out — see the comment above the <video> tag.
+      // The `data-wired` guard matches the carousel's own, so a soft
+      // navigation back to Home doesn't stack up duplicate observers on
+      // the same video element.
+      document.querySelectorAll<HTMLVideoElement>('#bombay-video').forEach((video) => {
+        if (video.dataset.wired === 'true') return;
+        video.dataset.wired = 'true';
 
-      function show(index: number) {
-        active = (index + slides.length) % slides.length;
-        slides.forEach((s, i) => s.classList.toggle('is-active', i === active));
-        dots.forEach((d, i) => d.classList.toggle('is-active', i === active));
-      }
-
-      function start() {
-        timer = setInterval(() => show(active + 1), 6000);
-      }
-
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-          show(i);
-          clearInterval(timer);
-          start();
-        });
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              // Some browsers refuse a scripted unmute outright; that's fine
+              // — the video just stays muted and the native controls (kept
+              // on for exactly this) let the visitor unmute it themselves.
+              video.muted = !entry.isIntersecting;
+            });
+          },
+          { threshold: 0.6 }
+        );
+        observer.observe(video);
       });
-
-      show(0);
-      start();
     });
   </script>
 </Layout>
+
+<style>
+  /* See the comment above #home-hero in the markup: this has to live here
+     (not as a Tailwind class) so it doesn't out-specificity the
+     sm:h-[92vh] desktop height, and so the 100vh/100svh fallback works as
+     two real separate declarations. */
+  @media (max-width: 639px) {
+    #home-hero {
+      height: 100vh;
+      height: 100svh;
+    }
+  }
+</style>
