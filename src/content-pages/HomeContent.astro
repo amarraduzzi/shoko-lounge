@@ -147,6 +147,20 @@ const copy = {
   reviewAriaLabel: { fr: 'Avis', en: 'Review', ar: 'تقييم' },
 } satisfies Record<string, { fr: string; en: string; ar: string } | { title: any; body: any }[]>;
 
+// Instagram grid — real posts from the client's account, picked for
+// variety (guest experience, food, ambiance, drinks) rather than six
+// similar shots. The first three are fresh uploads; the other three reuse
+// existing site photography that wasn't already shown in the ambiance grid
+// above, so this section doesn't just repeat it.
+const instagramPosts = [
+  { src: '/images/instagram-1.webp', alt: { fr: 'Une cliente filme l\'ambiance en soirée', en: 'A guest filming the evening atmosphere', ar: 'زبونة تصور أجواء السهرة' } },
+  { src: '/images/instagram-2.webp', alt: { fr: 'Roll signature garni de tobiko', en: 'Signature roll topped with tobiko', ar: 'رول مميز مزين بالتوبيكو' } },
+  { src: '/images/instagram-3.webp', alt: { fr: 'Table dressée à la lueur des bougies', en: 'Table set by candlelight', ar: 'طاولة مُعدة في ضوء الشموع' } },
+  { src: '/images/cocktail-red-velvet.webp', alt: { fr: 'Cocktail signature Red Velvet', en: 'Signature Red Velvet cocktail', ar: 'كوكتيل ريد فيلفيت المميز' } },
+  { src: '/images/interior-1.webp', alt: { fr: 'Moment mode dans l\'ambiance du lounge', en: 'A fashion moment in the lounge\'s atmosphere', ar: 'لحظة أناقة في أجواء اللاونج' } },
+  { src: '/images/dish-rock-shrimps.webp', alt: { fr: 'Rock shrimps servis à table', en: 'Rock shrimp served table-side', ar: 'روك شريمبس تُقدَّم على الطاولة' } },
+] satisfies { src: string; alt: { fr: string; en: string; ar: string } }[];
+
 // Restaurant + LocalBusiness structured data — the single most important
 // JSON-LD block on the whole site, since Home is what Google/AI engines
 // most often use to resolve "what is this place, where is it, is it open".
@@ -267,7 +281,11 @@ const path = localizedPath('/', lang);
           <Button href={localizedPath('/menu', lang)} variant="outline">{t(common.voirLeMenuComplet, lang)}</Button>
         </div>
         <p class="mt-4 flex items-center gap-2 text-sm [text-shadow:0_1px_8px_rgba(0,0,0,0.9)] sm:[text-shadow:none]" style="color: var(--color-text-muted)">
-          <span aria-hidden="true" style="text-shadow: 0 1px 8px rgba(0,0,0,0.9)">📷</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-accent); filter: drop-shadow(0 1px 8px rgba(0,0,0,0.9))">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4" />
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+          </svg>
           <a href={instagramProof.url} target="_blank" rel="noreferrer" class="hover:underline">
             {instagramProof.followers} {t(common.instagramFollowersSuffix, lang)}
           </a>
@@ -500,16 +518,44 @@ const path = localizedPath('/', lang);
        (see content/social-proof.ts); the client chose to lean on
        Instagram's real, verifiable follower count as social proof instead
        of a review section, rather than risk a curated-positive selection
-       reading as spin next to a middling average. -->
+       reading as spin next to a middling average.
+       The photo grid below was added on top of the original stat-only
+       version: a bare "74K" felt like an unsupported claim with nothing to
+       back it up, so six real posts now sit right above it — a guest
+       filming, food, a table setting, a cocktail, a fashion moment and a
+       branded dish — so the number reads as proof, not a guess. Every
+       tile links out to the profile like the button already did. -->
   <section class="section-tint-warm relative max-w-none px-0 py-16 sm:py-24 overflow-hidden" data-reveal>
     <div class="section-glow" style="width: 380px; height: 380px; background: var(--color-accent); opacity: 0.14; right: -140px; bottom: -60px;"></div>
-    <div class="relative max-w-2xl mx-auto px-5 sm:px-8 text-center">
+    <div class="relative max-w-4xl mx-auto px-5 sm:px-8 text-center">
       <span class="block text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style="color: var(--color-accent)">
         {lang === 'en' ? 'On Instagram' : lang === 'ar' ? 'على إنستغرام' : 'Sur Instagram'}
       </span>
-      <p class="font-display text-4xl sm:text-5xl font-semibold mb-2" style="color: var(--color-text-primary)">
+      <p class="font-display text-4xl sm:text-5xl font-semibold mb-8" style="color: var(--color-text-primary)">
         {instagramProof.followers}
       </p>
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-8">
+        {instagramPosts.map((post, i) => (
+          <a
+            href={instagramProof.url}
+            target="_blank"
+            rel="noreferrer"
+            class="instagram-tile group relative block rounded-xl overflow-hidden aspect-square"
+            style={`transition-delay: ${i * 60}ms`}
+            data-reveal="scale"
+            aria-label={`@${instagramProof.handle}`}
+          >
+            <img src={post.src} alt={t(post.alt, lang)} class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+            <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style="background-color: rgba(11,11,12,0.45)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="#fff" stroke="none" />
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
       <p class="text-sm sm:text-base mb-6" style="color: var(--color-text-muted)">
         {t(common.instagramFollowersSuffix, lang)}
       </p>
