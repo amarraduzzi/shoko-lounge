@@ -169,7 +169,7 @@ const galleryVideos = [
        view — same IntersectionObserver approach as the homepage, just
        matched on a shared class since there are several instances here
        instead of one. -->
-  <section class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+  <section id="video-gallery" class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-20 scroll-mt-24">
     <div class="max-w-2xl mb-8 sm:mb-10" data-reveal>
       <p class="font-bold text-sm tracking-widest uppercase" style="color: var(--color-accent)">{t(copy.videoGalleryKicker, lang)}</p>
       <h2 class="font-display text-3xl sm:text-4xl font-semibold mt-2">{t(copy.videoGalleryTitle, lang)}</h2>
@@ -181,10 +181,17 @@ const galleryVideos = [
           style={`background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 16px 40px rgba(0,0,0,0.4); transition-delay: ${i * 80}ms`}
           data-reveal="scale"
         >
+          <!-- No autoplay here (unlike the homepage's Shoko Nights clip):
+               these sit lower on the page and four of them starting at once
+               would autoplay four audio-less loops the instant a visitor
+               scrolls past, which reads as noisy rather than inviting. Each
+               stays on its poster frame until the visitor taps play
+               themselves — the custom overlay button below is the trigger,
+               since native per-browser play buttons are too small/inconsistent
+               to rely on as the only way in, especially on mobile. -->
           <video
             class="about-gallery-video w-full aspect-[9/16] rounded-xl object-cover"
             poster={clip.poster}
-            autoplay
             muted
             loop
             playsinline
@@ -194,6 +201,21 @@ const galleryVideos = [
           >
             <source src={clip.src} type="video/mp4" />
           </video>
+          <button
+            type="button"
+            class="about-gallery-play absolute inset-0 flex items-center justify-center rounded-xl transition-opacity"
+            style="background-color: rgba(0,0,0,0.28)"
+            aria-label={t(copy.videoGalleryAlt, lang)}
+          >
+            <span
+              class="flex items-center justify-center w-14 h-14 rounded-full"
+              style="background-color: rgba(255,255,255,0.92); box-shadow: 0 8px 24px rgba(0,0,0,0.4)"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--color-accent)" style="margin-left: 2px">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </button>
         </div>
       ))}
     </div>
@@ -203,23 +225,31 @@ const galleryVideos = [
 </Layout>
 
 <script>
-  // Same pattern as the Shoko Nights video on the homepage — see that
-  // file's comment for the full reasoning. Matched on a shared class
-  // instead of one id, since this page has four of these side by side.
+  // Unlike the homepage's Shoko Nights video (which autoplays muted and
+  // only unmutes on scroll — see that file's comment), these clips don't
+  // start on their own at all: each stays paused on its poster frame until
+  // the visitor taps the play overlay, at which point it plays unmuted
+  // (a direct click is a user gesture, so browsers allow sound immediately,
+  // no autoplay workaround needed). The overlay hides once playback starts
+  // and reappears on pause/end so the visitor can tell it's tappable again.
   document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLVideoElement>('.about-gallery-video').forEach((video) => {
-      if (video.dataset.wired === 'true') return;
-      video.dataset.wired = 'true';
+    document.querySelectorAll<HTMLElement>('.about-gallery-play').forEach((overlay) => {
+      if (overlay.dataset.wired === 'true') return;
+      overlay.dataset.wired = 'true';
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            video.muted = !entry.isIntersecting;
-          });
-        },
-        { threshold: 0.6 }
-      );
-      observer.observe(video);
+      const video = overlay.previousElementSibling as HTMLVideoElement | null;
+      if (!video) return;
+
+      const hideOverlay = () => { overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; };
+      const showOverlay = () => { overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; };
+
+      overlay.addEventListener('click', () => {
+        video.muted = false;
+        video.play();
+        hideOverlay();
+      });
+      video.addEventListener('pause', showOverlay);
+      video.addEventListener('ended', showOverlay);
     });
   });
 </script>

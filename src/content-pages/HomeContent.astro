@@ -112,7 +112,7 @@ const copy = {
   bombayDetail1: { fr: 'DJ set & musique live', en: 'DJ set & live music', ar: 'دي جي وموسيقى حية' },
   bombayDetail2: { fr: 'Cocktails signature', en: 'Signature cocktails', ar: 'كوكتيلات مميزة' },
   bombayDetail3: { fr: 'Show & entertainment', en: 'Show & entertainment', ar: 'عرض وترفيه' },
-  bombayCta: { fr: 'Réserver ma soirée', en: 'Reserve my evening', ar: 'احجز أمسيتي' },
+  bombayCta: { fr: 'Voir plus de vidéos', en: 'See more videos', ar: 'شاهد المزيد من الفيديوهات' },
   bombayVideoAlt: {
     fr: `Ambiance d'une soirée Shoko Nights chez ${siteConfig.identity.name}`,
     en: `Shoko Nights evening at ${siteConfig.identity.name}`,
@@ -341,7 +341,7 @@ const path = localizedPath('/', lang);
               </li>
             ))}
           </ul>
-          <Button href={localizedPath('/reservation', lang)} variant="cta">{t(copy.bombayCta, lang)}</Button>
+          <Button href={`${localizedPath('/a-propos', lang)}#video-gallery`} variant="cta">{t(copy.bombayCta, lang)}</Button>
         </div>
       </div>
     </section>
