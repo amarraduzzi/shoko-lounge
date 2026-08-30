@@ -39,6 +39,10 @@ const nav = [
 // language regardless of where you currently are on the site.
 const currentPath = Astro.url.pathname;
 const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPath, l) }));
+// Same list, minus the language already active — this is what the mobile
+// dropdown offers (the active one is already shown as the toggle's own
+// label, so repeating it inside the dropdown would be redundant).
+const otherLangLinks = langLinks.filter((l) => l.lang !== lang);
 ---
 <header id="site-header" class="sticky top-0 z-40 transition-all duration-300" data-scrolled="false">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
@@ -64,22 +68,21 @@ const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPa
       ))}
     </nav>
 
-    <!-- Language switcher — real links to the same page's other-language
-         URL (see langLinks above), not a JS toggle: each is an actual
-         separately-crawlable static page (see astro.config.mjs's i18n
-         comment for why that matters here). Always visible in the header
-         itself, including on mobile — not tucked away inside the hamburger
-         panel only, since picking a language is a first-glance decision,
-         not a secondary nav item. Stays compact enough (2-letter codes,
-         tight padding) to sit next to the logo and the mobile menu toggle
-         without crowding either. -->
-    <div class="flex items-center gap-0.5 sm:gap-1 shrink-0 rounded-full p-0.5" style="border: 1px solid var(--color-border)">
+    <!-- Language switcher (desktop) — real links to the same page's
+         other-language URL (see langLinks above), not a JS toggle: each is
+         an actual separately-crawlable static page (see astro.config.mjs's
+         i18n comment for why that matters here). Desktop-only now (md and
+         up) — on mobile this three-pill row ate too much of an already
+         tight header, competing with the logo and the hamburger toggle for
+         the same handful of pixels. Mobile gets its own compact
+         single-button dropdown instead, see below. -->
+    <div class="hidden md:flex items-center gap-1 shrink-0 rounded-full p-0.5" style="border: 1px solid var(--color-border)">
       {langLinks.map((l) => (
         <a
           href={l.href}
           aria-label={LANGUAGE_NATIVE_NAME[l.lang]}
           aria-current={lang === l.lang ? 'true' : undefined}
-          class="px-1.5 sm:px-2 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-colors"
+          class="px-2 py-1 rounded-full text-xs font-bold transition-colors"
           style={`color: ${lang === l.lang ? 'var(--color-background)' : 'var(--color-text-muted)'}; background-color: ${lang === l.lang ? 'var(--color-accent)' : 'transparent'}`}
         >
           {LANGUAGE_LABEL[l.lang]}
@@ -94,6 +97,49 @@ const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPa
     >
       {orderCtaLabel.label} {arrow(lang)}
     </a>
+
+    <!-- Language switcher (mobile) — a single button showing the active
+         language's code, sitting right next to the hamburger toggle.
+         Tapping it drops a small panel down with the other two languages;
+         tapping one of those navigates straight to that page's equivalent
+         URL, same real-link behavior as the desktop pills (no client-side
+         language switching, still a proper crawlable page per language).
+         Kept as its own block (not just a responsive variant of the
+         desktop pills) since the two need genuinely different markup: a
+         row of three links vs. one button + an absolutely-positioned
+         panel. -->
+    <div class="relative md:hidden shrink-0">
+      <button
+        id="mobile-lang-toggle"
+        type="button"
+        class="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold transition-colors"
+        style="border: 1px solid var(--color-border); color: var(--color-text-primary)"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-label={LANGUAGE_NATIVE_NAME[lang]}
+      >
+        {LANGUAGE_LABEL[lang]}
+        <svg id="mobile-lang-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transition-transform duration-200">
+          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <div
+        id="mobile-lang-panel"
+        class="hidden flex-col absolute right-0 top-full mt-2 min-w-[7rem] rounded-xl overflow-hidden z-50"
+        style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 12px 32px rgba(0,0,0,0.4)"
+      >
+        {otherLangLinks.map((l) => (
+          <a
+            href={l.href}
+            aria-label={LANGUAGE_NATIVE_NAME[l.lang]}
+            class="px-4 py-2.5 text-sm font-semibold"
+            style="color: var(--color-text-primary)"
+          >
+            {LANGUAGE_NATIVE_NAME[l.lang]}
+          </a>
+        ))}
+      </div>
+    </div>
 
     <!-- Mobile nav toggle -->
     <button id="mobile-nav-toggle" class="md:hidden shrink-0" aria-label="Menu" aria-expanded="false">
@@ -110,9 +156,9 @@ const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPa
         {item.label}
       </a>
     ))}
-    <!-- Language pills are no longer repeated here — they're always visible
-         in the header bar itself now (see above), including on mobile, so
-         duplicating them inside this panel would just be clutter. -->
+    <!-- Language options are no longer repeated here — mobile has its own
+         dropdown next to the hamburger now (see above), so duplicating
+         them inside this panel too would just be clutter. -->
     <a
       href={orderCtaLabel.href}
       class="mt-3 pt-3 py-2.5 text-sm font-bold"
@@ -153,6 +199,12 @@ const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPa
   #mobile-nav-panel.open {
     display: flex;
   }
+  #mobile-lang-panel.open {
+    display: flex;
+  }
+  #mobile-lang-chevron.open {
+    transform: rotate(180deg);
+  }
 </style>
 
 <script>
@@ -162,17 +214,22 @@ const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPa
   // active nav item, different lang-switcher state per page), so its old
   // DOM nodes and any listeners bound to them are gone after a transition;
   // this re-queries fresh nodes and rebinds every time instead of only once.
-  // `scrollHandler` is tracked at module scope purely to remove the
-  // previous page's `window` scroll listener first — `window` itself isn't
-  // swapped between navigations, so without this, every navigation would
-  // stack another listener on top instead of replacing it.
+  // `scrollHandler` / `outsideClickHandler` are tracked at module scope
+  // purely to remove the previous page's `window`/`document` listeners
+  // first — those objects aren't swapped between navigations, so without
+  // this, every navigation would stack another listener on top instead of
+  // replacing it.
   let scrollHandler = null;
+  let outsideClickHandler = null;
 
   document.addEventListener('astro:page-load', () => {
     const header = document.getElementById('site-header');
     const progress = document.getElementById('header-progress');
     const toggle = document.getElementById('mobile-nav-toggle');
     const panel = document.getElementById('mobile-nav-panel');
+    const langToggle = document.getElementById('mobile-lang-toggle');
+    const langPanel = document.getElementById('mobile-lang-panel');
+    const langChevron = document.getElementById('mobile-lang-chevron');
 
     function onScroll() {
       if (!header || !progress) return;
@@ -192,5 +249,28 @@ const langLinks = LANGUAGES.map((l) => ({ lang: l, href: localizedPath(currentPa
       const isOpen = panel?.classList.toggle('open');
       toggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
     });
+
+    // Mobile language dropdown: toggles open/closed on tap, and — unlike
+    // the hamburger panel, which the visitor closes deliberately — also
+    // closes itself on any tap outside it, since a language picker left
+    // open over the page content would otherwise sit there blocking taps
+    // on whatever's underneath.
+    langToggle?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = langPanel?.classList.toggle('open');
+      langToggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+      langChevron?.classList.toggle('open', Boolean(isOpen));
+    });
+
+    if (outsideClickHandler) document.removeEventListener('click', outsideClickHandler);
+    outsideClickHandler = (event) => {
+      if (!langPanel?.classList.contains('open')) return;
+      const target = event.target;
+      if (langToggle?.contains(target) || langPanel?.contains(target)) return;
+      langPanel.classList.remove('open');
+      langToggle?.setAttribute('aria-expanded', 'false');
+      langChevron?.classList.remove('open');
+    };
+    document.addEventListener('click', outsideClickHandler);
   });
 </script>
