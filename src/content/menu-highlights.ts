@@ -60,6 +60,12 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'تونة حمراء، أفوكادو، واكامي، لمسات من زيت السمسم المحمّص والزنجبيل الطازج، تُقدَّم مع رقائق الأرز.',
         },
         priceMAD: 95,
+        image: '/images/dish-tartare-thon.webp',
+        imageAlt: {
+          fr: 'Tartare de thon rouge et avocat, chips de riz',
+          en: 'Red tuna and avocado tartare with rice chips',
+          ar: 'تارتار تونة حمراء وأفوكادو مع رقائق الأرز',
+        },
       },
       {
         name: 'Avocat aux gambas',
@@ -78,6 +84,12 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'ساشيمي سلمون طازج، تتبيلة صويا-حمضيات، سمسم، برادة كمأة وبصل مقرمش. يحتوي على الغلوتين.',
         },
         priceMAD: 100,
+        image: '/images/dish-saumon-truffe.webp',
+        imageAlt: {
+          fr: 'Saumon mariné à la truffe, dégusté aux baguettes',
+          en: 'Truffle-marinated salmon, served with chopsticks',
+          ar: 'سلمون متبّل بالكمأة، يُقدَّم بعيدان الأكل',
+        },
       },
       {
         name: 'Ô César',
@@ -196,6 +208,12 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'شريحة سلمون، صلصة تيرياكي منزلية، أرز بسمتي وخضروات سوتيه.',
         },
         priceMAD: 210,
+        image: '/images/dish-saumon-teriyaki.webp',
+        imageAlt: {
+          fr: 'Pavé de saumon snacké au Teriyaki, fleurs comestibles',
+          en: 'Seared teriyaki salmon fillet with edible flowers',
+          ar: 'شريحة سلمون بالتيرياكي مع زهور صالحة للأكل',
+        },
       },
       {
         name: 'Filet de bœuf',
@@ -205,6 +223,12 @@ export const menuHighlights: MenuHighlightCategory[] = [
           ar: 'فيليه لحم بقري مشوي، صلصة الفلفل وبطاطس مهروسة. يحتوي على منتجات الألبان.',
         },
         priceMAD: 220,
+        image: '/images/dish-filet-boeuf.webp',
+        imageAlt: {
+          fr: 'Filet de bœuf grillé, purée et jus, à la bougie',
+          en: 'Grilled beef fillet with mash and jus, by candlelight',
+          ar: 'فيليه لحم بقري مشوي مع بطاطس مهروسة، على ضوء الشموع',
+        },
       },
     ],
   },
