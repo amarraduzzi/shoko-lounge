@@ -98,55 +98,69 @@ const otherLangLinks = langLinks.filter((l) => l.lang !== lang);
       {orderCtaLabel.label} {arrow(lang)}
     </a>
 
-    <!-- Language switcher (mobile) — a single button showing the active
-         language's code, sitting right next to the hamburger toggle.
-         Tapping it drops a small panel down with the other two languages;
-         tapping one of those navigates straight to that page's equivalent
-         URL, same real-link behavior as the desktop pills (no client-side
-         language switching, still a proper crawlable page per language).
-         Kept as its own block (not just a responsive variant of the
-         desktop pills) since the two need genuinely different markup: a
-         row of three links vs. one button + an absolutely-positioned
-         panel. -->
-    <div class="relative md:hidden shrink-0">
-      <button
-        id="mobile-lang-toggle"
-        type="button"
-        class="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold transition-colors"
-        style="border: 1px solid var(--color-border); color: var(--color-text-primary)"
-        aria-haspopup="true"
-        aria-expanded="false"
-        aria-label={LANGUAGE_NATIVE_NAME[lang]}
-      >
-        {LANGUAGE_LABEL[lang]}
-        <svg id="mobile-lang-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transition-transform duration-200">
-          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Mobile-only right-hand cluster: language toggle + hamburger,
+         grouped in one wrapper so they stay glued together as a single
+         unit. Fix: these two used to be separate top-level flex children
+         in the header row. With `justify-between` and only 3 visible items
+         on real mobile widths (logo, lang toggle, hamburger — nav/desktop
+         pills/CTA are all hidden below sm/md), the layout distributes the
+         leftover space evenly across both gaps, which pushes the middle
+         item (the lang toggle) toward the horizontal center of the header
+         instead of sitting next to the hamburger. Wrapping both in one
+         `md:hidden` flex container turns them into a single flex child, so
+         `justify-between` only ever has two things to space apart (logo
+         and this cluster) and the cluster itself stays pinned to the right
+         edge, lang toggle immediately left of the hamburger. -->
+    <div class="flex items-center gap-2 md:hidden shrink-0">
+      <!-- Language switcher (mobile) — a single button showing the active
+           language's code. Tapping it drops a small panel down with the
+           other two languages; tapping one of those navigates straight to
+           that page's equivalent URL, same real-link behavior as the
+           desktop pills (no client-side language switching, still a
+           proper crawlable page per language). Kept as its own block (not
+           just a responsive variant of the desktop pills) since the two
+           need genuinely different markup: a row of three links vs. one
+           button + an absolutely-positioned panel. -->
+      <div class="relative shrink-0">
+        <button
+          id="mobile-lang-toggle"
+          type="button"
+          class="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold transition-colors"
+          style="border: 1px solid var(--color-border); color: var(--color-text-primary)"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-label={LANGUAGE_NATIVE_NAME[lang]}
+        >
+          {LANGUAGE_LABEL[lang]}
+          <svg id="mobile-lang-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transition-transform duration-200">
+            <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <div
+          id="mobile-lang-panel"
+          class="hidden flex-col absolute right-0 top-full mt-2 min-w-[7rem] rounded-xl overflow-hidden z-50"
+          style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 12px 32px rgba(0,0,0,0.4)"
+        >
+          {otherLangLinks.map((l) => (
+            <a
+              href={l.href}
+              aria-label={LANGUAGE_NATIVE_NAME[l.lang]}
+              class="px-4 py-2.5 text-sm font-semibold"
+              style="color: var(--color-text-primary)"
+            >
+              {LANGUAGE_NATIVE_NAME[l.lang]}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Mobile nav toggle -->
+      <button id="mobile-nav-toggle" class="shrink-0" aria-label="Menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--color-text-primary)">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
         </svg>
       </button>
-      <div
-        id="mobile-lang-panel"
-        class="hidden flex-col absolute right-0 top-full mt-2 min-w-[7rem] rounded-xl overflow-hidden z-50"
-        style="background-color: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 12px 32px rgba(0,0,0,0.4)"
-      >
-        {otherLangLinks.map((l) => (
-          <a
-            href={l.href}
-            aria-label={LANGUAGE_NATIVE_NAME[l.lang]}
-            class="px-4 py-2.5 text-sm font-semibold"
-            style="color: var(--color-text-primary)"
-          >
-            {LANGUAGE_NATIVE_NAME[l.lang]}
-          </a>
-        ))}
-      </div>
     </div>
-
-    <!-- Mobile nav toggle -->
-    <button id="mobile-nav-toggle" class="md:hidden shrink-0" aria-label="Menu" aria-expanded="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--color-text-primary)">
-        <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
-      </svg>
-    </button>
   </div>
 
   <!-- Mobile nav panel -->
