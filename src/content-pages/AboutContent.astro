@@ -1,0 +1,142 @@
+---
+// See HomeContent.astro's top comment for the shared-body-per-route
+// pattern this and every other src/content-pages/*.astro file follows.
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import Ornament from '../components/Ornament.astro';
+import { siteConfig } from '../config/site.config';
+import { instagramProof } from '../content/social-proof';
+import { t, localizedPath, type Language } from '../i18n/languages';
+import { place } from '../i18n/ui';
+
+interface Props {
+  lang?: Language;
+}
+const { lang = 'fr' } = Astro.props;
+
+const { name } = siteConfig.identity;
+const primaryKeyword = t(siteConfig.identity.primaryKeyword, lang);
+const city = t(place.city, lang);
+
+const copy = {
+  metaTitle: {
+    fr: `À propos — ${name}, ${primaryKeyword} à ${city}`,
+    en: `About — ${name}, ${primaryKeyword} in ${city}`,
+    ar: `من نحن — ${name}, ${primaryKeyword} في ${city}`,
+  },
+  metaDescription: {
+    fr: `L'histoire de ${name}, ${primaryKeyword} à ${city} : cuisine fusion contemporaine, cocktails signature et ambiance lounge.`,
+    en: `The story of ${name}, ${primaryKeyword} in ${city}: contemporary fusion cuisine, signature cocktails and a lounge atmosphere.`,
+    ar: `قصة ${name}, ${primaryKeyword} في ${city}: مطبخ فيوجن معاصر، كوكتيلات مميزة وأجواء لاونج.`,
+  },
+  kicker: { fr: 'Notre histoire', en: 'Our story', ar: 'قصتنا' },
+  heroTitle: { fr: `À propos de ${name}`, en: `About ${name}`, ar: `عن ${name}` },
+  heroAlt: {
+    fr: `Intérieur du ${primaryKeyword} ${name}`,
+    en: `Interior of ${name}, ${primaryKeyword}`,
+    ar: `داخل ${name}, ${primaryKeyword}`,
+  },
+  p1: {
+    fr: `${name} est né d'une conviction simple : ${city} méritait un ${primaryKeyword} où la cuisine fusion ne serait jamais un compromis — ni sur les saveurs, ni sur la présentation, ni sur l'ambiance qui les entoure.`,
+    en: `${name} was born from a simple conviction: ${city} deserved a ${primaryKeyword} where fusion cuisine would never be a compromise — not on flavor, not on presentation, not on the atmosphere around it.`,
+    ar: `وُلد ${name} من قناعة بسيطة: تستحق ${city} ${primaryKeyword} حيث لا يكون مطبخ الفيوجن تنازلاً أبدًا — لا في النكهة، ولا في التقديم، ولا في الأجواء المحيطة به.`,
+  },
+  p2: {
+    fr: 'Notre cuisine puise dans plusieurs traditions culinaires — méditerranéenne, asiatique, sud-américaine — pour composer des assiettes qui surprennent sans jamais perdre en cohérence. Chaque plat est pensé comme une rencontre, jamais comme un simple mélange.',
+    en: 'Our kitchen draws from several culinary traditions — Mediterranean, Asian, South American — to compose plates that surprise without ever losing coherence. Every dish is designed as an encounter, never a mere mix.',
+    ar: 'يستمد مطبخنا من عدة تقاليد طهوية — متوسطية، آسيوية، أمريكية جنوبية — لتركيب أطباق تفاجئ دون أن تفقد تماسكها. كل طبق مصمم كلقاء، وليس مجرد مزيج.',
+  },
+  p3: {
+    fr: `Au-delà de l'assiette, ${name} est pensé comme un lieu de vie : décor doré et feutré, cocktails signature, et des soirées à thème qui transforment le lounge en scène. C'est cet ensemble, plus que n'importe quel plat pris isolément, qui fait revenir nos clients.`,
+    en: `Beyond the plate, ${name} is designed as a place to live in: plush gold decor, signature cocktails, and themed nights that turn the lounge into a stage. It's this whole, more than any single dish, that keeps our guests coming back.`,
+    ar: `إلى ما وراء الطبق، صُمم ${name} كمكان للعيش فيه: ديكور ذهبي فاخر، كوكتيلات مميزة، وأمسيات خاصة تحول اللاونج إلى مسرح. هذا الكل، أكثر من أي طبق بمفرده، هو ما يجعل ضيوفنا يعودون دائمًا.`,
+  },
+  statDepuis: { fr: 'ouvert depuis 2022', en: 'open since 2022', ar: 'مفتوح منذ 2022' },
+  statPlats: { fr: 'plats préparés à la commande', en: 'dishes cooked to order', ar: 'أطباق تُحضّر عند الطلب' },
+  statInstagram: { fr: 'abonnés sur Instagram', en: 'followers on Instagram', ar: 'متابع على إنستغرام' },
+} satisfies Record<string, { fr: string; en: string; ar: string }>;
+
+const path = localizedPath('/a-propos', lang);
+---
+<Layout
+  title={t(copy.metaTitle, lang)}
+  description={t(copy.metaDescription, lang)}
+  path={path}
+  lang={lang}
+>
+  <PageHero
+    kicker={t(copy.kicker, lang)}
+    title={t(copy.heroTitle, lang)}
+    image="/images/interior-1.webp"
+    alt={t(copy.heroAlt, lang)}
+  />
+  <section class="relative max-w-3xl mx-auto px-5 sm:px-8 pt-12 sm:pt-16 pb-20 overflow-hidden">
+    <!-- Large faded emblem behind the copy — the real gold mark, not a
+         generic decorative shape, used at a scale it can never appear at
+         in the header. A quiet "wow" texture instead of another flat
+         paragraph block. -->
+    <img
+      src="/images/logo-mark.webp"
+      alt=""
+      aria-hidden="true"
+      class="mark-watermark w-[26rem] h-[26rem] -right-32 -top-16 sm:-right-24"
+    />
+    <div class="relative space-y-5 text-sm sm:text-base leading-relaxed" style="color: var(--color-text-muted)" data-reveal>
+      <p>{t(copy.p1, lang)}</p>
+      <p>{t(copy.p2, lang)}</p>
+      <p>{t(copy.p3, lang)}</p>
+    </div>
+  </section>
+
+  <!-- Oversized, unboxed numbers instead of three identical grey tiles.
+       First pass of this looked fine on desktop's 3-column grid but flat
+       on mobile — a border-left divider does nothing once the grid stacks
+       to one column, so it was just three plain lines of text in a row.
+       Fixed: each stat gets its own small icon (so it reads as a distinct
+       moment, not just a number), the divider switches to a horizontal
+       rule on mobile / vertical rule on desktop, and a soft red glow sits
+       behind the whole band so it isn't just another flat tinted box.
+
+       Third stat swapped from a Tripadvisor rating to Instagram followers
+       — see content/social-proof.ts for why (real rating is 3.3/5 on 15
+       reviews with serious negative reviews mixed in; client chose
+       Instagram's real, verifiable follower count instead). -->
+  <div class="section-tint relative overflow-hidden">
+    <div class="section-glow" style="width: 340px; height: 340px; background: var(--color-primary); opacity: 0.07; left: 50%; top: -120px; transform: translateX(-50%);"></div>
+    <section class="relative max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+      <div class="grid sm:grid-cols-3 gap-10 sm:gap-6">
+        {[
+          {
+            n: '2022',
+            l: t(copy.statDepuis, lang),
+            icon: 'M12 2c-1 3-4 4-4 8a4 4 0 008 0c0-4-3-5-4-8zM6 20h12',
+          },
+          {
+            n: '100%',
+            l: t(copy.statPlats, lang),
+            icon: 'M5 21V9a7 7 0 0114 0v12M5 21h14M9 21v-6h6v6',
+          },
+          {
+            n: instagramProof.followers,
+            l: t(copy.statInstagram, lang),
+            icon: 'M12 2.5l2.9 6.1 6.6.7-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6-4.9-4.6 6.6-.7z',
+          },
+        ].map((stat, i) => (
+          <div
+            class={`text-center sm:text-left pb-8 sm:pb-0 sm:pl-8 ${i > 0 ? 'border-t sm:border-t-0 sm:border-l pt-8 sm:pt-0' : ''}`}
+            style={`border-color: var(--color-border); transition-delay: ${i * 100}ms`}
+            data-reveal
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" class="mb-3 mx-auto sm:mx-0" style="color: var(--color-accent)">
+              <path d={stat.icon} stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="stat-huge">{stat.n}</p>
+            <p class="text-xs mt-2 max-w-[14rem] mx-auto sm:mx-0" style="color: var(--color-text-muted)">{stat.l}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <Ornament />
+</Layout>
